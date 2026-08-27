@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bine Comun — societatea civilă din Bucovina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spectral:wght@500;600&family=Marcellus&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.1.0/dist/tabler-icons.min.css">
+<style>
+  :root{
+    --bg:#ece3d2; --surface:#fbf7ef; --surface-2:#e7ddc7;
+    --text:#2a2620; --text-2:#675f50; --text-3:#968b77;
+    --border:#dccfb4; --border-2:#c8b893;
+    --info:#2c6e8f; --info-bg:#e2edf3;
+    --teal:#3c5a40; --teal-bg:#e4ebdf;
+    --coral:#7a5230; --coral-bg:#efe5d6;
+    --purple:#9d4632; --purple-bg:#f2e4dc;
+    --amber:#956512; --amber-bg:#f3e8cf;
+    --radius:10px; --radius-sm:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Spectral',Georgia,serif;letter-spacing:-.01em}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  .app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+
+  .side{background:var(--surface);border-right:1px solid var(--border);padding:18px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px;cursor:pointer}
+  .brand .logo{width:34px;height:34px;border-radius:9px;background:var(--info);color:#fbf7ef;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .brand b{font-weight:400;font-size:17px;font-family:'Marcellus',serif;letter-spacing:.03em}
+  .brand small{display:block;color:var(--text-3);font-size:11px;font-weight:400}
+  .nav{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:var(--radius-sm);color:var(--text-2);font-size:14px;font-weight:500}
+  .nav i{font-size:19px}
+  .nav:hover{background:var(--surface-2)}
+  .nav.active{background:var(--info-bg);color:var(--info)}
+  .nav .badge{margin-left:auto;background:var(--coral-bg);color:var(--coral);font-size:11px;padding:1px 7px;border-radius:20px;font-weight:600}
+  .side-foot{margin-top:auto;border-top:1px solid var(--border);padding-top:12px;display:flex;align-items:center;gap:10px}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--teal-bg);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+
+  .main{padding:0;min-width:0}
+  .topbar{position:sticky;top:0;z-index:5;background:rgba(236,227,210,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .topbar h1{font-size:22px;font-weight:500}
+  .topbar .sub{color:var(--text-2);font-size:13px;margin-top:2px}
+  .search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border-2);border-radius:20px;padding:8px 14px;min-width:230px}
+  .search input{border:none;outline:none;background:none;font-size:14px;flex:1;color:var(--text)}
+  .search i{color:var(--text-3);font-size:18px}
+  .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;border:1px solid var(--border-2);background:var(--surface);transition:.12s}
+  .btn:hover{background:var(--surface-2)}
+  .btn.primary{background:var(--info);color:#fff;border-color:var(--info)}
+  .btn.primary:hover{background:#235a76}
+  .btn.sm{padding:7px 12px;font-size:13px}
+
+  .content{padding:24px 28px 60px;max-width:1180px}
+  .view{display:none}
+  .view.on{display:block}
+
+  .filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .chip{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border-2);background:var(--surface);color:var(--text-2);transition:.12s}
+  .chip:hover{border-color:var(--text-3)}
+  .chip.on{background:var(--text);color:#fff;border-color:var(--text)}
+
+  .split{display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start}
+  @media(max-width:1000px){.split{grid-template-columns:1fr}.aside{display:none}}
+
+  .month-label{font-size:13px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin:6px 0 12px}
+  .ev{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;transition:.12s}
+  .ev:hover{border-color:var(--border-2)}
+  .ev .date{flex-shrink:0;width:58px;text-align:center;border-right:1px solid var(--border);padding-right:14px}
+  .ev .date .d{font-size:24px;font-weight:600;line-height:1}
+  .ev .date .m{font-size:11px;color:var(--text-3);text-transform:uppercase;margin-top:3px}
+  .ev .date .day{font-size:11px;color:var(--text-3);margin-top:6px}
+  .ev .body{flex:1;min-width:0}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+  .tag{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500}
+  .t-edu{background:var(--info-bg);color:var(--info)}
+  .t-env{background:var(--teal-bg);color:var(--teal)}
+  .t-soc{background:var(--coral-bg);color:var(--coral)}
+  .t-civ{background:var(--purple-bg);color:var(--purple)}
+  .t-on{background:var(--amber-bg);color:var(--amber)}
+  .ev h3{font-size:16px;font-weight:600;margin-bottom:5px}
+  .ev .meta{display:flex;gap:16px;flex-wrap:wrap;color:var(--text-2);font-size:13px;margin-bottom:10px}
+  .ev .meta span{display:flex;align-items:center;gap:5px}
+  .ev .meta i{font-size:15px;color:var(--text-3)}
+  .ev .foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .org{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-2)}
+  .org.link{cursor:pointer}
+  .org.link:hover{color:var(--info)}
+  .oa{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+  .spots{font-size:12px;color:var(--text-3);margin-left:auto;display:flex;align-items:center;gap:6px}
+  .bar{width:70px;height:5px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--teal)}
+
+  .aside{display:flex;flex-direction:column;gap:18px;position:sticky;top:88px}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+  .panel h4{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+  .panel h4 i{font-size:17px;color:var(--text-2)}
+  .stat{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-top:1px solid var(--border);font-size:13px;color:var(--text-2)}
+  .stat:first-of-type{border-top:none}
+  .stat b{font-size:18px;font-weight:600;color:var(--text)}
+
+  /* MAP */
+  .map-split{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+  @media(max-width:1040px){.map-split{grid-template-columns:1fr}}
+  .map-wrap{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;height:560px}
+  .map-svg{position:absolute;inset:0;width:100%;height:100%}
+  .map-title{position:absolute;left:16px;top:14px;font-size:13px;font-weight:600;color:var(--text-2);background:rgba(255,255,255,.85);padding:4px 10px;border-radius:14px}
+  .pin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;text-align:center;transition:.12s}
+  .pin:hover{z-index:4}
+  .pin .dot{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+  .pin .dot span{transform:rotate(45deg);color:#fff;font-size:12px;font-weight:600}
+  .pin .lbl{font-size:11px;font-weight:500;color:var(--text);background:rgba(255,255,255,.85);padding:1px 6px;border-radius:10px;margin-top:3px;display:inline-block;white-space:nowrap}
+  .pin.active .dot{outline:3px solid rgba(24,95,165,.3)}
+  .map-legend{position:absolute;left:14px;bottom:14px;background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--text-2);display:flex;flex-direction:column;gap:6px}
+  .map-legend span{display:flex;align-items:center;gap:7px}
+  .ld{width:10px;height:10px;border-radius:50%}
+
+  .ng-list{display:flex;flex-direction:column;gap:10px;max-height:560px;overflow:auto;padding-right:4px}
+  .ng-card{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px;cursor:pointer;transition:.12s}
+  .ng-card:hover{border-color:var(--border-2)}
+  .ng-card.hl{border-color:var(--info);box-shadow:0 0 0 3px var(--info-bg)}
+  .ng-card .body{flex:1;min-width:0}
+  .ng-card h3{font-size:14px;font-weight:600;margin-bottom:2px}
+  .ng-card .sm{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:5px}
+  .ng-card .sm i{font-size:14px;color:var(--text-3)}
+  .ng-card .chev{align-self:center;color:var(--text-3);font-size:18px}
+
+  /* COLLABS */
+  .col-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;transition:.12s}
+  .col:hover{border-color:var(--border-2)}
+  .col .top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .ctype{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px}
+  .ct-partner{background:var(--purple-bg);color:var(--purple)}
+  .ct-vol{background:var(--coral-bg);color:var(--coral)}
+  .ct-offer{background:var(--teal-bg);color:var(--teal)}
+  .ct-fund{background:var(--amber-bg);color:var(--amber)}
+  .col h3{font-size:15px;font-weight:600;margin-bottom:6px;line-height:1.35}
+  .col .cdesc{font-size:13px;color:var(--text-2);margin-bottom:12px;flex:1}
+  .col .cmeta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-3);margin-bottom:12px}
+  .col .cmeta span{display:flex;align-items:center;gap:4px}
+  .col .cmeta i{font-size:14px}
+  .col .cfoot{display:flex;align-items:center;gap:10px;border-top:1px solid var(--border);padding-top:12px}
+  .col .cfoot .org{flex:1;min-width:0}
+  .deadline{color:#9d4632!important}
+
+  /* NGO DETAIL */
+  .back{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13px;font-weight:500;margin-bottom:18px}
+  .back:hover{color:var(--text)}
+  .ng-head{display:flex;gap:18px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:20px;flex-wrap:wrap}
+  .ng-head .big{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;flex-shrink:0}
+  .ng-head h1{font-size:22px;font-weight:600;margin-bottom:4px}
+  .ng-head .tagline{color:var(--text-2);font-size:14px;margin-bottom:12px;max-width:520px}
+  .ng-head .facts{display:flex;gap:18px;flex-wrap:wrap;color:var(--text-2);font-size:13px}
+  .ng-head .facts span{display:flex;align-items:center;gap:6px}
+  .ng-head .facts i{font-size:16px;color:var(--text-3)}
+  .ng-actions{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+  .grid2{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+  @media(max-width:980px){.grid2{grid-template-columns:1fr}}
+  .sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px}
+  .sec h2{font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .sec h2 i{font-size:18px;color:var(--text-2)}
+  .sec h2 .count{margin-left:auto;font-size:12px;color:var(--text-3);font-weight:400}
+  .person{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)}
+  .person:first-of-type{border-top:none}
+  .person .body{flex:1}
+  .person h3{font-size:14px;font-weight:600}
+  .person .role{font-size:12px;color:var(--text-2)}
+  .ptag{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500}
+  .proj{padding:11px 0;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .proj:first-of-type{border-top:none}
+  .proj .pt{flex:1}
+  .proj h3{font-size:14px;font-weight:500}
+  .proj .pm{font-size:12px;color:var(--text-3)}
+  .pstatus{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500}
+  .s-active{background:var(--teal-bg);color:var(--teal)}
+  .s-plan{background:var(--amber-bg);color:var(--amber)}
+  .s-done{background:var(--surface-2);color:var(--text-2)}
+  .need{padding:11px 13px;background:var(--surface-2);border-radius:var(--radius-sm);margin-bottom:9px;cursor:pointer}
+  .need:hover{background:#eae8e0}
+  .need h3{font-size:13px;font-weight:600}
+  .need .nm{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:5px;margin-top:2px}
+  .need .nm i{font-size:13px}
+  .contact-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border);font-size:13px}
+  .contact-row:first-of-type{border-top:none}
+  .contact-row i{font-size:17px;color:var(--text-3);width:18px}
+  .contact-row a{color:var(--info)}
+
+  .overlay{position:fixed;inset:0;background:rgba(20,20,18,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .overlay.open{display:flex}
+  .modal{background:var(--surface);border-radius:14px;max-width:460px;width:100%;padding:24px;max-height:90vh;overflow:auto;position:relative}
+  .modal h2{font-size:19px;font-weight:600;margin-bottom:6px}
+  .modal .mmeta{color:var(--text-2);font-size:13px;display:flex;flex-direction:column;gap:6px;margin:14px 0;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .modal .mmeta span{display:flex;align-items:center;gap:8px}
+  .modal .mmeta i{font-size:17px;color:var(--text-3);width:18px}
+  .modal p.desc{font-size:14px;color:var(--text-2);margin-bottom:8px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:13px;font-weight:500;margin-bottom:5px}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--border-2);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;outline:none}
+  .field textarea{resize:vertical;min-height:74px}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--info);box-shadow:0 0 0 3px var(--info-bg)}
+  .modal-actions{display:flex;gap:10px;margin-top:18px}
+  .modal-actions .btn{flex:1;justify-content:center}
+  .x{position:absolute;top:16px;right:16px;font-size:22px;color:var(--text-3)}
+  .success{text-align:center;padding:10px 0}
+  .success .ic{width:56px;height:56px;border-radius:50%;background:var(--teal-bg);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px}
+  .empty{text-align:center;color:var(--text-3);padding:50px;font-size:14px}
+
+  /* HOME */
+  .home-hero{margin-bottom:20px}
+  .home-hero h1{font-size:24px;font-weight:600;margin-bottom:4px}
+  .home-hero p{color:var(--text-2);font-size:14px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+  .metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px;cursor:pointer;transition:.12s}
+  .metric:hover{border-color:var(--border-2)}
+  .metric .ml{font-size:13px;color:var(--text-2);display:flex;align-items:center;gap:6px}
+  .metric .ml i{font-size:16px}
+  .metric .mv{font-size:26px;font-weight:600;margin-top:6px}
+  .metric .md{font-size:12px;color:var(--teal);margin-top:2px}
+  .home-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+  @media(max-width:980px){.home-grid{grid-template-columns:1fr}}
+  .sec .seclink{margin-left:auto;font-size:12px;color:var(--info);font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:3px}
+  .row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--border)}
+  .row:first-of-type{border-top:none}
+  .row .datebox{width:46px;text-align:center;flex-shrink:0}
+  .row .datebox .d{font-size:19px;font-weight:600;line-height:1}
+  .row .datebox .m{font-size:10px;color:var(--text-3);text-transform:uppercase}
+  .row .rb{flex:1;min-width:0}
+  .row .rb h3{font-size:14px;font-weight:500;line-height:1.3}
+  .row .rb .rs{font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px;margin-top:2px}
+  .row .rb .rs i{font-size:13px}
+  .crow{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-top:1px solid var(--border);cursor:pointer}
+  .crow:first-of-type{border-top:none}
+  .crow:hover h3{color:var(--info)}
+  .crow .ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .crow .cb{flex:1;min-width:0}
+  .crow h3{font-size:13px;font-weight:500;line-height:1.35}
+  .crow .cs{font-size:12px;color:var(--text-3);margin-top:2px;display:flex;align-items:center;gap:5px}
+  .crow .cs i{font-size:13px}
+  .minimap{position:relative;height:180px;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;margin-bottom:12px}
+  .minimap svg{position:absolute;inset:0;width:100%;height:100%}
+  .minimap .mdot{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid #fff;transform:translate(-50%,-50%)}
+  .minimap .mover{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding:8px}
+  .minimap .mover span{background:rgba(255,255,255,.92);font-size:12px;font-weight:500;color:var(--text);padding:4px 10px;border-radius:14px}
+  .spot{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border);cursor:pointer}
+  .spot:first-of-type{border-top:none}
+  .spot:hover h3{color:var(--info)}
+  .spot .sb{flex:1;min-width:0}
+  .spot h3{font-size:13px;font-weight:500}
+  .spot .ss{font-size:11px;color:var(--text-3)}
+
+  /* PEOPLE */
+  .ppl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
+  .pcard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:.12s}
+  .pcard:hover{border-color:var(--border-2)}
+  .pcard .pav{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex-shrink:0}
+  .pcard .pb{flex:1;min-width:0}
+  .pcard h3{font-size:14px;font-weight:600}
+  .pcard .pr{font-size:12px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pcard .po{font-size:12px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bio{font-size:14px;color:var(--text-2);line-height:1.75}
+
+  /* FUNDING */
+  .fund-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(326px,1fr));gap:14px}
+  .fund{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:.12s}
+  .fund:hover{border-color:var(--border-2)}
+  .fund .ftop{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .ftag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+  .f-eu{background:var(--info-bg);color:var(--info)}
+  .f-local{background:var(--teal-bg);color:var(--teal)}
+  .f-privat{background:var(--amber-bg);color:var(--amber)}
+  .f-premiu{background:var(--purple-bg);color:var(--purple)}
+  .fsoon{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#f3e0db;color:#9d4632;margin-left:auto}
+  .fund h3{font-size:15px;font-weight:600;margin-bottom:3px;line-height:1.35}
+  .fund .ffunder{font-size:12px;color:var(--text-3);margin-bottom:12px}
+  .fund .famount{font-size:21px;font-weight:600;font-family:'Spectral',Georgia,serif;color:var(--text);margin-bottom:6px}
+  .fund .fdl{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:5px;margin-bottom:12px}
+  .fund .fdl i{font-size:14px;color:var(--text-3)}
+  .fund .fdesc{font-size:13px;color:var(--text-2);flex:1;margin-bottom:12px}
+  .fund .fmeta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .fund .ffoot{display:flex;gap:8px;border-top:1px solid var(--border);padding-top:12px}
+  .fund .ffoot .btn{flex:1;justify-content:center}
+
+  /* FEED */
+  .composer{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;align-items:center;cursor:pointer;transition:.12s}
+  .composer:hover{border-color:var(--border-2)}
+  .composer .fake{flex:1;background:var(--surface-2);border-radius:20px;padding:10px 16px;font-size:14px;color:var(--text-3)}
+  .post{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+  .post.consult{border-left:3px solid var(--purple)}
+  .phead{display:flex;gap:11px;align-items:flex-start;margin-bottom:10px}
+  .phead .pav,.cmt .pav{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0}
+  .phead .pav{width:42px;height:42px;font-size:14px;cursor:pointer}
+  .phead .who{flex:1;min-width:0}
+  .phead .who h3{font-size:14px;font-weight:600;cursor:pointer;display:inline}
+  .phead .who h3:hover{color:var(--info)}
+  .phead .who .sub2{font-size:12px;color:var(--text-3);margin-top:2px}
+  .rb2{font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;vertical-align:1px;margin-left:6px;white-space:nowrap}
+  .followb{font-size:12px;font-weight:600;color:var(--info);cursor:pointer;white-space:nowrap;background:none;border:none;padding:2px 4px}
+  .followb:hover{text-decoration:underline}
+  .followb.on{color:var(--text-3)}
+  .ptext{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:12px;white-space:pre-wrap}
+  .attach{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px;cursor:pointer;background:var(--bg);transition:.12s}
+  .attach:hover{border-color:var(--border-2)}
+  .attach .ai{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .attach .ab{flex:1;min-width:0}
+  .attach h3{font-size:13px;font-weight:600;line-height:1.3}
+  .attach .as{font-size:12px;color:var(--text-3);margin-top:2px}
+  .attach .chev2{color:var(--text-3);font-size:17px}
+  .pstats{font-size:12px;color:var(--text-3);display:flex;gap:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  .pacts{display:flex;gap:4px;padding-top:6px}
+  .pact{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:var(--text-2)}
+  .pact i{font-size:17px}
+  .pact:hover{background:var(--surface-2)}
+  .pact.on{color:var(--info)}
+  .comments{border-top:1px solid var(--border);margin-top:10px;padding-top:12px}
+  .cmt{display:flex;gap:10px;margin-bottom:10px}
+  .cmt .pav{width:30px;height:30px;font-size:11px}
+  .cmt .bubble{background:var(--surface-2);border-radius:12px;padding:8px 12px;font-size:13px;flex:1;min-width:0}
+  .cmt .bubble b{font-size:12.5px}
+  .cmt .bubble .ct{color:var(--text-3);font-size:11px;margin-left:6px}
+  .cmt-in{display:flex;gap:10px;margin-top:4px;align-items:center}
+  .cmt-in input{flex:1;border:1px solid var(--border-2);border-radius:18px;padding:8px 14px;font-size:13px;outline:none;background:var(--surface);font-family:inherit;color:var(--text)}
+  .cmt-in input:focus{border-color:var(--info)}
+  .consult-note{font-size:12px;color:var(--purple);background:var(--purple-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;gap:7px;align-items:center}
+
+  /* NOTIFICATIONS */
+  .bell-btn{position:relative;width:40px;height:40px;border-radius:50%;border:1px solid var(--border-2);background:var(--surface);color:var(--text-2);font-size:19px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+  .bell-btn:hover{background:var(--surface-2)}
+  .ndot{position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:#9d4632;border:2px solid var(--surface)}
+  .notif-panel{position:fixed;top:70px;right:24px;width:min(360px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:var(--surface);border:1px solid var(--border-2);border-radius:14px;box-shadow:0 10px 30px rgba(30,25,15,.18);z-index:45;display:none}
+  .notif-panel.open{display:block}
+  .notif-panel .nh{padding:14px 16px 10px;font-weight:600;font-size:15px;border-bottom:1px solid var(--border);font-family:'Spectral',serif}
+  .nitem{display:flex;gap:11px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-2);align-items:flex-start;line-height:1.45}
+  .nitem:last-child{border-bottom:none}
+  .nitem .ni{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .nitem .nt{font-size:11px;color:var(--text-3);margin-top:2px}
+
+  /* menu + mobile + a11y */
+  .menu-btn{display:none;align-items:center;justify-content:center;width:38px;height:38px;border-radius:var(--radius-sm);border:1px solid var(--border-2);background:var(--surface);color:var(--text);font-size:20px;flex-shrink:0}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(20,20,18,.4);z-index:30}
+  .scrim.on{display:block}
+  *:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+  @media(max-width:760px){
+    .app{grid-template-columns:1fr}
+    .side{position:fixed;left:0;top:0;width:262px;z-index:35;transform:translateX(-100%);transition:transform .22s ease;box-shadow:2px 0 16px rgba(0,0,0,.12)}
+    .side.open{transform:none}
+    .menu-btn{display:inline-flex}
+    .content{padding:18px 16px 56px}
+    .topbar{padding:12px 16px}
+    .topbar h1{font-size:19px}
+    .search{min-width:0;width:100%;order:3}
+    .home-grid,.grid2{grid-template-columns:1fr}
+    .map-split{grid-template-columns:1fr}
+    .ng-list{max-height:none}
+    .map-wrap{height:420px}
+    .ng-head{padding:16px}
+    .ng-actions{margin-left:0;width:100%}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="side">
+    <div class="brand" onclick="go('home')">
+      <div class="logo"><i class="ti ti-mountain"></i></div>
+      <div><b>Bine Comun</b><small>societatea civilă din Bucovina</small></div>
+    </div>
+    <a class="nav" data-nav="home" onclick="go('home')"><i class="ti ti-layout-dashboard"></i> Acasă</a>
+    <a class="nav" data-nav="feed" onclick="go('feed')"><i class="ti ti-news"></i> Flux <span class="badge">nou</span></a>
+    <a class="nav" data-nav="map" onclick="go('map')"><i class="ti ti-map-2"></i> Hartă ONG-uri</a>
+    <a class="nav" data-nav="events" onclick="go('events')"><i class="ti ti-calendar-event"></i> Evenimente <span class="badge">7</span></a>
+    <a class="nav" data-nav="people" onclick="go('people')"><i class="ti ti-users"></i> Oameni</a>
+    <a class="nav" data-nav="collabs" onclick="go('collabs')"><i class="ti ti-puzzle"></i> Colaborări <span class="badge">8</span></a>
+    <a class="nav" data-nav="funding" onclick="go('funding')"><i class="ti ti-coin"></i> Finanțări</a>
+    <a class="nav" data-nav="resources" onclick="go('resources')"><i class="ti ti-books"></i> Resurse</a>
+    <div class="side-foot">
+      <div class="avatar">PG</div>
+      <div style="font-size:13px"><div style="font-weight:500">Paul Grosu</div><div style="color:var(--text-3);font-size:11px">voluntar · Suceava</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-btn" aria-label="Deschide meniul" onclick="toggleSide()"><i class="ti ti-menu-2"></i></button>
+      <div id="tb-title"></div>
+      <div class="search"><i class="ti ti-search"></i><input id="q" placeholder="Caută…" oninput="onSearch()"></div>
+      <button class="bell-btn" id="bell" aria-label="Notificări" onclick="toggleNotifs(event)"><i class="ti ti-bell"></i><span class="ndot" id="ndot" style="display:none"></span></button>
+      <button class="btn primary" id="tb-cta"></button>
+    </div>
+
+    <div class="content">
+
+      <!-- HOME -->
+      <section class="view" id="view-home"></section>
+
+      <!-- FEED -->
+      <section class="view" id="view-feed">
+        <div class="filters" id="feed-filters"></div>
+        <div class="split">
+          <div id="feed-list"></div>
+          <div class="aside" id="feed-aside"></div>
+        </div>
+      </section>
+
+      <!-- EVENTS -->
+      <section class="view on" id="view-events">
+        <div class="filters" id="ev-filters"></div>
+        <div class="split">
+          <div><div id="ev-list"></div></div>
+          <div class="aside">
+            <div class="panel">
+              <h4><i class="ti ti-chart-bar"></i> Iunie în Suceava</h4>
+              <div class="stat"><span>Evenimente</span><b>34</b></div>
+              <div class="stat"><span>Locuri de voluntar</span><b>610</b></div>
+              <div class="stat"><span>ONG-uri organizatoare</span><b>19</b></div>
+            </div>
+            <div class="panel" style="background:var(--info-bg);border-color:#bcd6e3">
+              <h4 style="color:var(--info)"><i class="ti ti-bell"></i> Pentru ONG-uri</h4>
+              <p style="font-size:13px;color:var(--info)">Publică-ți evenimentul și ajunge la voluntarii activi din tot județul.</p>
+              <button class="btn" style="margin-top:12px;width:100%;justify-content:center;background:var(--info);color:#fff;border-color:var(--info)">Adaugă eveniment</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAP -->
+      <section class="view" id="view-map">
+        <div class="filters" id="map-filters"></div>
+        <div class="map-split">
+          <div class="map-wrap">
+            <svg class="map-svg" viewBox="0 0 600 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="600" height="480" fill="#e7e0cf"/>
+              <path d="M40 250 L80 150 L150 110 L230 140 L300 100 L370 130 L450 95 L540 150 L560 230 L520 320 L430 360 L330 350 L250 380 L160 345 L90 300 Z"
+                    fill="#e1ead6" stroke="#b0bd90" stroke-width="2.5"/>
+              <path d="M48 254 L92 165 L126 212 L170 142 L212 214 L246 172 L280 254 Z" fill="#bcbfb0"/>
+              <path d="M170 142 l12 21 -24 0 z" fill="#f6f1e6"/>
+              <path d="M92 165 l9 18 -18 0 z" fill="#f6f1e6"/>
+              <g fill="#3c5a40">
+                <path d="M150 300 l9 17 -18 0 z"/><path d="M150 291 l7 13 -14 0 z"/>
+                <path d="M236 332 l9 17 -18 0 z"/><path d="M236 323 l7 13 -14 0 z"/>
+                <path d="M330 322 l9 17 -18 0 z"/><path d="M330 313 l7 13 -14 0 z"/>
+                <path d="M408 300 l9 17 -18 0 z"/><path d="M408 291 l7 13 -14 0 z"/>
+              </g>
+              <path d="M150 252 Q290 214 372 250 Q456 282 548 246" fill="none" stroke="#2c6e8f" stroke-width="2.5" opacity=".5"/>
+              <g stroke="#956512" stroke-width="3" stroke-linecap="round"><path d="M470 250 l0 -18"/><path d="M462 240 l16 0"/></g>
+            </svg>
+            <div class="map-title"><i class="ti ti-map-pin" style="font-size:13px;vertical-align:-2px"></i> Județul Suceava</div>
+            <div id="map-pins"></div>
+            <div class="map-legend">
+              <span><i class="ld" style="background:var(--info)"></i> Educație</span>
+              <span><i class="ld" style="background:var(--teal)"></i> Mediu</span>
+              <span><i class="ld" style="background:var(--coral)"></i> Social</span>
+              <span><i class="ld" style="background:var(--purple)"></i> Drepturi civice</span>
+            </div>
+          </div>
+          <div class="ng-list" id="ng-list"></div>
+        </div>
+      </section>
+
+      <!-- COLLABS -->
+      <section class="view" id="view-collabs">
+        <div class="filters" id="col-filters"></div>
+        <div class="col-grid" id="col-grid"></div>
+      </section>
+
+      <!-- PEOPLE -->
+      <section class="view" id="view-people"></section>
+
+      <!-- PERSON DETAIL -->
+      <section class="view" id="view-person"></section>
+
+      <!-- FUNDING -->
+      <section class="view" id="view-funding"></section>
+
+      <!-- RESOURCES -->
+      <section class="view" id="view-resources"></section>
+
+      <!-- NGO DETAIL -->
+      <section class="view" id="view-ngo"></section>
+
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" onclick="toggleSide()"></div>
+<div class="notif-panel" id="notif-panel"></div>
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="x" aria-label="Închide" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const CAT={
+  edu:{label:'Educație',cls:'t-edu',color:'#2c6e8f',bg:'#e2edf3'},
+  env:{label:'Mediu',cls:'t-env',color:'#3c5a40',bg:'#e4ebdf'},
+  soc:{label:'Social',cls:'t-soc',color:'#7a5230',bg:'#efe5d6'},
+  civ:{label:'Drepturi civice',cls:'t-civ',color:'#9d4632',bg:'#f2e4dc'}
+};
+const ROLE={ong:['ONG','#2c6e8f','#e2edf3'],pol:['policymaker','#3c5a40','#e4ebdf'],vol:['voluntar','#7a5230','#efe5d6'],youth:['tânăr','#9d4632','#f2e4dc']};
+const CTYPE={
+  partner:{l:'Caut parteneri',cls:'ct-partner',i:'ti-puzzle'},
+  vol:{l:'Caut voluntari',cls:'ct-vol',i:'ti-users'},
+  offer:{l:'Ofer ajutor',cls:'ct-offer',i:'ti-gift'},
+  fund:{l:'Caut finanțare',cls:'ct-fund',i:'ti-coin'}
+};
+
+const NGOS=[
+  {id:'be',name:'Bucovina Educată',cat:'edu',city:'Suceava',x:70,y:46,founded:2009,members:120,oi:'BE',
+   tagline:'Educație non-formală și acces la finanțare pentru profesori și ONG-uri mici din județ.',
+   people:[{n:'Ana Radu',r:'Director executiv',i:'AR',t:'ong'},{n:'Mihai Popa',r:'Consilier politici de tineret',i:'MP',t:'pol'},{n:'Sara Ene',r:'Coordonator voluntari',i:'SE',t:'vol'}],
+   projects:[{t:'Atelier scriere proiecte Erasmus+',s:'active',m:'în desfășurare · 100 participanți'},{t:'Rețeaua profesorilor din Bucovina',s:'active',m:'24 școli partenere'},{t:'Bursa „Prima clasă”',s:'plan',m:'lansare sept. 2026'}],
+   web:'bucovinaeducata.ro',email:'contact@bucovinaeducata.ro',phone:'+40 721 000 111',events:[3]},
+  {id:'cb',name:'Codrii Bucovinei',cat:'env',city:'Câmpulung Moldovenesc',x:30,y:50,founded:2015,members:340,oi:'CB',
+   tagline:'Ecologizare montană și advocacy de mediu în zona Rarău–Giumalău, peste 300 de voluntari.',
+   people:[{n:'Dan Ilie',r:'Președinte',i:'DI',t:'ong'},{n:'Elena Costin',r:'Coordonator voluntari (200+ acțiuni)',i:'EC',t:'vol'},{n:'Toma V.',r:'Ambasador tineret',i:'TV',t:'youth'}],
+   projects:[{t:'Ecologizare poiana Rarău',s:'active',m:'21 iun · 120 voluntari'},{t:'Monitorizare poteci montane',s:'active',m:'Rarău–Giumalău'},{t:'Raport deșeuri 2025',s:'done',m:'publicat'}],
+   web:'codriibucovinei.ro',email:'salut@codriibucovinei.ro',phone:'+40 733 222 444',events:[2]},
+  {id:'ir',name:'Inimi din Rădăuți',cat:'soc',city:'Rădăuți',x:66,y:24,founded:2012,members:90,oi:'IR',
+   tagline:'Sprijin pentru persoane fără adăpost și familii vulnerabile din nordul județului.',
+   people:[{n:'Maria Pop',r:'Fondator',i:'MP',t:'ong'},{n:'Vlad N.',r:'Coordonator teren',i:'VN',t:'vol'}],
+   projects:[{t:'Hrană caldă în centrul vechi',s:'active',m:'28 iun · 30 voluntari'},{t:'Adăpost de iarnă',s:'plan',m:'pregătire sezon rece'}],
+   web:'inimiradauti.ro',email:'ajutor@inimiradauti.ro',phone:'+40 744 555 666',events:[5]},
+  {id:'ts',name:'Consiliul Tinerilor Suceava',cat:'civ',city:'Suceava',x:74,y:50,founded:2007,members:210,oi:'TS',
+   tagline:'Vocea tinerilor suceveni în relația cu autoritățile; advocacy pentru politici de tineret.',
+   people:[{n:'Irina Sava',r:'Președinte',i:'IS',t:'ong'},{n:'Mihai Popa',r:'Consilier comisia de tineret',i:'MP',t:'pol'},{n:'Alex D.',r:'Delegat tineret',i:'AD',t:'youth'}],
+   projects:[{t:'Dezbatere politici de tineret 2027',s:'active',m:'18 iun · CJ Suceava'},{t:'Bugetare participativă',s:'plan',m:'toamna 2026'}],
+   web:'tinerisuceava.ro',email:'office@tinerisuceava.ro',phone:'+40 755 777 888',events:[1,6]},
+  {id:'tf',name:'Tineri din Fălticeni',cat:'edu',city:'Fălticeni',x:60,y:70,founded:2018,members:75,oi:'TF',
+   tagline:'Tabere și programe de leadership pentru liceenii din sudul județului.',
+   people:[{n:'George Man',r:'Director programe',i:'GM',t:'ong'},{n:'Bianca R.',r:'Voluntar coordonator',i:'BR',t:'vol'}],
+   projects:[{t:'Tabără de leadership la Rarău',s:'active',m:'3 iul · cabana Rarău'},{t:'Cluburi de dezbateri',s:'active',m:'8 licee'}],
+   web:'tinerifalticeni.ro',email:'hello@tinerifalticeni.ro',phone:'+40 766 888 999',events:[7]},
+  {id:'dv',name:'Dorna Verde',cat:'env',city:'Vatra Dornei',x:14,y:62,founded:2016,members:160,oi:'DV',
+   tagline:'Reîmpădurire și spații verzi comunitare în Țara Dornelor.',
+   people:[{n:'Radu Lung',r:'Coordonator',i:'RL',t:'ong'},{n:'Nina P.',r:'Voluntar lider',i:'NP',t:'vol'}],
+   projects:[{t:'Plantare pe valea Bistriței',s:'active',m:'5 iul · 500 puieți'},{t:'Grădini de cartier',s:'active',m:'4 cartiere'}],
+   web:'dornaverde.ro',email:'contact@dornaverde.ro',phone:'+40 777 999 000',events:[8]},
+  {id:'pg',name:'Punte Gura Humorului',cat:'soc',city:'Gura Humorului',x:48,y:58,founded:2014,members:65,oi:'PG',
+   tagline:'Centru comunitar și sprijin pentru tineri din zona Voroneț–Humor.',
+   people:[{n:'Carmen Ursu',r:'Coordonator centru',i:'CU',t:'ong'},{n:'Paul G.',r:'Voluntar',i:'PG',t:'vol'}],
+   projects:[{t:'After-school comunitar',s:'active',m:'45 copii'},{t:'Spațiu de evenimente gratuit',s:'active',m:'pentru ONG-uri'}],
+   web:'puntegurahumorului.ro',email:'salut@puntegh.ro',phone:'+40 788 111 222',events:[]}
+];
+
+const EVENTS=[
+  {id:1,d:18,m:'iun',day:'Joi',title:'Dezbatere: politici de tineret 2027',cat:'civ',online:false,city:'Suceava',venue:'Consiliul Județean',time:'10:00–13:00',ngo:'ts',spots:41,cap:60,desc:'Consultare deschisă pe noua strategie județeană de tineret, cu policymakeri din comisia de specialitate.'},
+  {id:2,d:21,m:'iun',day:'Duminică',title:'Voluntariat: ecologizare poiana Rarău',cat:'env',online:false,city:'Câmpulung Moldovenesc',venue:'Masivul Rarău',time:'09:00–14:00',ngo:'cb',spots:84,cap:120,desc:'Acțiune de curățenie montană organizată de mai multe ONG-uri. Echipament și transport asigurate.'},
+  {id:3,d:24,m:'iun',day:'Miercuri',title:'Atelier: scriere de proiecte Erasmus+',cat:'edu',online:true,city:'Online',venue:'Zoom',time:'18:00–20:00',ngo:'be',spots:89,cap:100,desc:'Învață pas cu pas cum scrii o cerere de finanțare câștigătoare.'},
+  {id:5,d:28,m:'iun',day:'Duminică',title:'Hrană caldă pentru oameni fără adăpost',cat:'soc',online:false,city:'Rădăuți',venue:'Centrul vechi',time:'11:00–15:00',ngo:'ir',spots:18,cap:30,desc:'Acțiune socială de weekend. Avem nevoie de 30 de voluntari pentru pregătit și distribuit.'},
+  {id:6,d:30,m:'iun',day:'Marți',title:'Webinar: drepturile voluntarilor',cat:'civ',online:true,city:'Online',venue:'YouTube Live',time:'19:00–20:00',ngo:'ts',spots:210,cap:500,desc:'Ce spune legea voluntariatului și cum îți recunoști orele de implicare.'},
+  {id:7,d:3,m:'iul',day:'Joi',title:'Tabără de leadership pentru liceeni',cat:'edu',online:false,city:'Câmpulung Moldovenesc',venue:'Cabana Rarău',time:'3 zile',ngo:'tf',spots:40,cap:45,desc:'Program intensiv de 3 zile: public speaking, lucru în echipă, design de proiect comunitar.'},
+  {id:8,d:5,m:'iul',day:'Sâmbătă',title:'Plantare de arbori pe valea Bistriței',cat:'env',online:false,city:'Vatra Dornei',venue:'Valea Bistriței Aurii',time:'08:00–12:00',ngo:'dv',spots:60,cap:150,desc:'Plantăm 500 de puieți. Adu mănuși și apă; restul îl punem noi la dispoziție.'}
+];
+
+const COLLABS=[
+  {id:1,type:'partner',title:'Caut 2 ONG-uri partenere pentru proiect Erasmus+',ngo:'be',cat:'edu',loc:'online',deadline:'30 iun',desc:'Pregătim o cerere KA210 pe educație non-formală. Avem nevoie de doi parteneri cu experiență în lucrul cu liceeni.'},
+  {id:2,type:'vol',title:'30 de voluntari pentru ecologizarea poienii Rarău',ngo:'cb',cat:'env',loc:'Câmpulung Mold.',deadline:'21 iun',desc:'Acțiune de o zi în masivul Rarău. Transport din Câmpulung, mănuși și saci asigurate. Potrivit și pentru începători.'},
+  {id:3,type:'offer',title:'Ofer mentorat juridic pro-bono pentru ONG-uri mici',ngo:'ts',cat:'civ',loc:'Suceava / online',deadline:'lunar',desc:'Un avocat din rețeaua noastră oferă o sesiune lunară gratuită: statut, contracte de voluntariat, GDPR.'},
+  {id:4,type:'fund',title:'Căutăm sponsor pentru echipament de plantare',ngo:'dv',cat:'env',loc:'Vatra Dornei',deadline:'10 iul',desc:'Avem nevoie de mănuși, unelte și transport pentru 150 de voluntari la plantarea de pe valea Bistriței.'},
+  {id:5,type:'vol',title:'Voluntari pentru gătit și distribuit hrană',ngo:'ir',cat:'soc',loc:'Rădăuți',deadline:'28 iun',desc:'Căutăm 30 de oameni pentru o acțiune de weekend în centrul vechi din Rădăuți. Tură de dimineață sau prânz.'},
+  {id:6,type:'partner',title:'Căutăm școli partenere pentru cluburi de dezbateri',ngo:'tf',cat:'edu',loc:'sudul județului',deadline:'1 sept',desc:'Extindem programul de dezbateri în licee din Fălticeni, Dolhasca și împrejurimi. Oferim training pentru profesori.'},
+  {id:7,type:'offer',title:'Oferim spațiu de evenimente gratuit pentru ONG-uri',ngo:'pg',cat:'soc',loc:'Gura Humorului',deadline:'permanent',desc:'Sala noastră comunitară (40 de locuri) e disponibilă gratuit pentru ateliere și întâlniri ale altor organizații.'},
+  {id:8,type:'fund',title:'Cofinanțare pentru tabăra de leadership',ngo:'tf',cat:'edu',loc:'Câmpulung Mold.',deadline:'15 iul',desc:'Acoperim 70% din costuri; căutăm un cofinanțator local pentru restul, ca 10 liceeni din medii vulnerabile să participe gratuit.'}
+];
+
+const PEOPLE=[
+  {id:'p1',n:'Ana Radu',i:'AR',role:'Director executiv',tag:'ong',ngo:'be',email:'ana.radu@bucovinaeducata.ro',bio:'Conduce Bucovina Educată din 2013. Specializată în atragerea de fonduri europene pentru educație și în programe pentru profesori din mediul rural sucevean.'},
+  {id:'p2',n:'Mihai Popa',i:'MP',role:'Consilier politici de tineret',tag:'pol',ngo:'ts',email:'mihai.popa@cjsuceava.ro',bio:'Consilier în comisia de tineret a Consiliului Județean Suceava. Lucrează ca punte între administrație și organizațiile de tineret din județ.'},
+  {id:'p3',n:'Elena Costin',i:'EC',role:'Coordonator voluntari',tag:'vol',ngo:'cb',email:'elena@codriibucovinei.ro',bio:'A coordonat peste 200 de acțiuni de mediu în zona Rarău–Giumalău. Formează echipe de voluntari și se ocupă de logistica pe teren.'},
+  {id:'p4',n:'Irina Sava',i:'IS',role:'Președinte',tag:'ong',ngo:'ts',email:'irina@tinerisuceava.ro',bio:'Conduce Consiliul Tinerilor Suceava. Reprezintă vocea tinerilor suceveni în consultările publice și în relația cu autoritățile.'},
+  {id:'p5',n:'Dan Ilie',i:'DI',role:'Președinte',tag:'ong',ngo:'cb',email:'dan@codriibucovinei.ro',bio:'Fondator al Codrii Bucovinei. Inițiator al campaniilor de monitorizare a potecilor montane și a calității aerului în orașele din județ.'},
+  {id:'p6',n:'Maria Pop',i:'MA',role:'Fondator',tag:'ong',ngo:'ir',email:'maria@inimiradauti.ro',bio:'A pornit Inimi din Rădăuți în 2012. Coordonează sprijinul pentru persoane fără adăpost și familii vulnerabile din nordul județului.'},
+  {id:'p7',n:'Toma Vasilescu',i:'TV',role:'Ambasador tineret',tag:'youth',ngo:'cb',email:'toma@codriibucovinei.ro',bio:'Elev de liceu și ambasador de tineret. Mobilizează colegi din Câmpulung pentru acțiunile de ecologizare și educație de mediu.'},
+  {id:'p8',n:'George Man',i:'GM',role:'Director programe',tag:'ong',ngo:'tf',email:'george@tinerifalticeni.ro',bio:'Coordonează taberele și cluburile de dezbateri pentru liceeni. Formează traineri voluntari pentru programele de leadership.'},
+  {id:'p9',n:'Carmen Ursu',i:'CU',role:'Coordonator centru comunitar',tag:'ong',ngo:'pg',email:'carmen@puntegh.ro',bio:'Administrează centrul comunitar din Gura Humorului și programul after-school pentru 45 de copii din zona Voroneț–Humor.'},
+  {id:'p10',n:'Radu Lung',i:'RL',role:'Coordonator',tag:'ong',ngo:'dv',email:'radu@dornaverde.ro',bio:'Coordonează plantările și grădinile de cartier din Țara Dornelor. Lucrează cu primăriile locale pentru spații verzi comunitare.'},
+  {id:'p11',n:'Sara Ene',i:'SE',role:'Coordonator voluntari',tag:'vol',ngo:'be',email:'sara@bucovinaeducata.ro',bio:'Gestionează rețeaua de mentori voluntari a Bucovina Educată și înscrierile la atelierele de scriere de proiecte.'},
+  {id:'p12',n:'Alex Dumitru',i:'AD',role:'Delegat tineret',tag:'youth',ngo:'ts',email:'alex@tinerisuceava.ro',bio:'Student și delegat de tineret. Participă la consultările pe bugetare participativă și la strategia județeană de tineret.'}
+];
+
+const FTYPE={eu:['Europeană','f-eu'],local:['Local / național','f-local'],privat:['Privat','f-privat'],premiu:['Premiu','f-premiu']};
+const FUND=[
+  {id:1,title:'Erasmus+ KA210 — parteneriate la scară mică',funder:'Comisia Europeană',type:'eu',amount:'până la 60.000 €',deadline:'1 oct 2026',cats:['edu','civ'],status:'open',desc:'Proiecte de cooperare și mobilitate pentru organizații de educație și tineret. Birocrație redusă, potrivit pentru ONG-uri mici.'},
+  {id:2,title:'Active Citizens Fund — sprijin instituțional',funder:'Fondul ONG (Granturile SEE)',type:'eu',amount:'15.000–50.000 €',deadline:'20 iul 2026',cats:['civ','soc'],status:'soon',desc:'Dezvoltarea organizațiilor societății civile, advocacy și implicare cetățenească la nivel local.'},
+  {id:3,title:'Program județean pentru tineret 2026',funder:'Consiliul Județean Suceava',type:'local',amount:'5.000–25.000 lei',deadline:'15 iul 2026',cats:['edu','civ'],status:'soon',desc:'Cofinanțare pentru proiecte de tineret derulate pe teritoriul județului Suceava.'},
+  {id:4,title:'Fondul pentru Mediu — împădurire și spații verzi',funder:'Administrația Fondului pentru Mediu',type:'local',amount:'până la 100.000 lei',deadline:'sesiune continuă',cats:['env'],status:'open',desc:'Sprijin pentru plantări, refacerea spațiilor verzi și educație ecologică în comunitate.'},
+  {id:5,title:'Start-ONG — granturi rapide',funder:'Kaufland & Act for Tomorrow',type:'privat',amount:'1.000–10.000 €',deadline:'30 sept 2026',cats:['edu','env','soc'],status:'open',desc:'Finanțare rapidă pentru proiecte comunitare aflate la început de drum. Aplicare simplă, online.'},
+  {id:6,title:'Redirecționează 20% din impozitul pe profit',funder:'Companii partenere din județ',type:'privat',amount:'sumă variabilă',deadline:'31 dec 2026',cats:['edu','env','soc','civ'],status:'open',desc:'Companiile pot direcționa până la 20% din impozit către ONG-uri, fără cost real pentru ele.'},
+  {id:7,title:'Premiul „Bucovina Civică” 2026',funder:'Bine Comun',type:'premiu',amount:'10.000 lei',deadline:'1 nov 2026',cats:['civ','soc'],status:'open',desc:'Recunoaștere și finanțare pentru cel mai cu impact proiect civic al anului din județ.'}
+];
+
+const ngoById=id=>NGOS.find(n=>n.id===id);
+
+/* persistent state */
+const store={reg:JSON.parse(localStorage.getItem('bc_reg')||'[]'),savedF:JSON.parse(localStorage.getItem('bc_savedF')||'[]'),
+  likes:JSON.parse(localStorage.getItem('bc_likes')||'[]'),follows:JSON.parse(localStorage.getItem('bc_follows')||'[]'),
+  myPosts:JSON.parse(localStorage.getItem('bc_myposts')||'[]'),myCmts:JSON.parse(localStorage.getItem('bc_mycmts')||'{}'),
+  notifs:JSON.parse(localStorage.getItem('bc_notifs')||'[]'),nseen:+(localStorage.getItem('bc_nseen')||0),
+  save(){localStorage.setItem('bc_reg',JSON.stringify(this.reg));localStorage.setItem('bc_savedF',JSON.stringify(this.savedF));
+    localStorage.setItem('bc_likes',JSON.stringify(this.likes));localStorage.setItem('bc_follows',JSON.stringify(this.follows));
+    localStorage.setItem('bc_myposts',JSON.stringify(this.myPosts));localStorage.setItem('bc_mycmts',JSON.stringify(this.myCmts));
+    localStorage.setItem('bc_notifs',JSON.stringify(this.notifs));localStorage.setItem('bc_nseen',String(this.nseen));}};
+const isReg=id=>store.reg.includes(id);
+const isSavedF=id=>store.savedF.includes(id);
+function registerEvent(id){if(!isReg(id)){store.reg.push(id);store.save();}}
+function unregisterEvent(id){store.reg=store.reg.filter(x=>x!==id);store.save();refresh();}
+function saveF(id){if(!isSavedF(id)){store.savedF.push(id);store.save();}}
+function toggleSavedF(id){if(isSavedF(id))store.savedF=store.savedF.filter(x=>x!==id);else store.savedF.push(id);store.save();refresh();}
+function refresh(){if(current==='events')renderEvents();if(current==='home')renderHome();if(current==='funding')renderFunding();if(current==='feed')renderFeed();}
+
+/* RESOURCES */
+const RTYPE={ghid:['Ghid','f-eu','ti-book'],sablon:['Șablon','f-local','ti-file-text'],webinar:['Webinar','f-premiu','ti-player-play'],date:['Set de date','f-privat','ti-database']};
+const RES=[
+  {id:1,title:'Cum înființezi un ONG în România',type:'ghid',cat:'civ',fmt:'PDF · 18 pag',desc:'Pașii legali, actele necesare și costurile pentru a porni o asociație sau fundație.'},
+  {id:2,title:'Model de statut și act constitutiv',type:'sablon',cat:'civ',fmt:'DOCX',desc:'Document editabil, conform legislației în vigoare, gata de completat.'},
+  {id:3,title:'Șablon de buget pentru proiecte',type:'sablon',cat:'edu',fmt:'XLSX',desc:'Categorii de cheltuieli, cofinanțare și raportare, pentru cereri de finanțare.'},
+  {id:4,title:'Ghidul voluntariatului legal',type:'ghid',cat:'soc',fmt:'PDF · 12 pag',desc:'Legea 78/2014 pe înțelesul tuturor: contracte, certificate și evidența orelor.'},
+  {id:5,title:'GDPR pentru ONG-uri mici',type:'ghid',cat:'civ',fmt:'PDF · 9 pag',desc:'Cum colectezi și păstrezi datele voluntarilor și beneficiarilor în siguranță.'},
+  {id:6,title:'Scrierea unei cereri Erasmus+',type:'webinar',cat:'edu',fmt:'video · 48 min',desc:'Înregistrarea atelierului, cu exemple de proiecte câștigătoare.'},
+  {id:7,title:'ONG-uri active în județul Suceava',type:'date',cat:'civ',fmt:'CSV',desc:'Set de date deschis cu organizațiile din platformă: domeniu, localitate, contact.'},
+  {id:8,title:'Ghid de comunicare și social media',type:'ghid',cat:'soc',fmt:'PDF · 15 pag',desc:'Cum îți crești vizibilitatea și atragi voluntari cu resurse minime.'}
+];
+let resFilter='all';
+const RES_FILTERS=[['all','Toate'],['ghid','Ghiduri'],['sablon','Șabloane'],['webinar','Webinarii'],['date','Date deschise']];
+function setResFilter(k){resFilter=k;renderResources();}
+function renderResources(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  const items=RES.filter(r=>{if(q&&!(r.title+r.desc).toLowerCase().includes(q))return false;return resFilter==='all'||r.type===resFilter;});
+  const chips=RES_FILTERS.map(([k,l])=>`<button class="chip ${resFilter===k?'on':''}" onclick="setResFilter('${k}')">${l}</button>`).join('');
+  const cards=items.length?items.map(r=>{const t=RTYPE[r.type],c=CAT[r.cat];
+    return `<div class="fund"><div class="ftop"><span class="ftag ${t[1]}"><i class="ti ${t[2]}" style="font-size:12px"></i> ${t[0]}</span><span class="tag ${c.cls}" style="margin-left:auto">${c.label}</span></div>
+      <h3>${r.title}</h3><div class="ffunder">${r.fmt}</div>
+      <p class="fdesc">${r.desc}</p>
+      <div class="ffoot"><button class="btn primary" style="flex:1;justify-content:center" onclick="done('Resursă deschisă','Am deschis <b>${r.title.replace(/'/g,'’')}</b>. Într-o versiune reală, fișierul s-ar descărca sau s-ar deschide aici.')"><i class="ti ti-download"></i> Deschide</button></div></div>`;}).join(''):'<div class="empty">Nicio resursă găsită.</div>';
+  document.getElementById('view-resources').innerHTML=`<div class="filters">${chips}</div><div class="fund-grid">${cards}</div>`;
+}
+
+/* ===== SOCIAL: FEED, FOLLOWS, NOTIFICATIONS ===== */
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PTYPE={update:['Actualizare','t-edu'],anunt:['Anunț','t-on'],intrebare:['Întrebare','t-soc'],consult:['Consultare publică','t-civ'],realizare:['Reușită','t-env']};
+
+const POSTS=[
+ {id:'s1',a:{k:'p',id:'p2'},type:'consult',time:'acum 2h',likes:46,attach:{k:'ev',id:1},
+  text:'Deschidem consultarea publică pentru Strategia Județeană de Tineret 2027–2030. Vrem să auzim direct de la tineri și ONG-uri: ce ar trebui să conțină? Comentariile de aici intră în sinteza oficială pe care o ducem în comisie.',
+  cmts:[{n:'Irina Sava',i:'IS',tag:'ong',time:'1h',text:'Propunem un capitol despre finanțarea structurilor de tineret din orașele mici, nu doar din municipiul Suceava.'},{n:'Alex Dumitru',i:'AD',tag:'youth',time:'40 min',text:'Transport public gratuit pentru elevi la evenimentele civice — ar schimba tot.'}]},
+ {id:'s2',a:{k:'n',id:'cb'},type:'anunt',time:'acum 3h',likes:89,attach:{k:'ev',id:2},
+  text:'Mai avem 36 de locuri la ecologizarea din poiana Rarău, duminică! Transport din Câmpulung, mănuși și saci de la noi. Vino cu un prieten — natura nu se curăță singură. 🌲',
+  cmts:[{n:'Toma Vasilescu',i:'TV',tag:'youth',time:'2h',text:'Venim 6 de la liceu, ne vedem la autobuz!'}]},
+ {id:'s3',a:{k:'p',id:'p1'},type:'update',time:'acum 5h',likes:54,attach:null,
+  text:'Am depus azi raportul intermediar pe proiectul Erasmus+. Trei lucruri despre bugete, pe care le povestesc pe larg la atelierul de miercuri: 1) puneți cofinanțarea pe hârtie din prima zi, 2) documentați fiecare chitanță în săptămâna în care apare, 3) nu subestimați costurile de transport în Bucovina.',
+  cmts:[{n:'Sara Ene',i:'SE',tag:'vol',time:'4h',text:'Punctul 2 ne-a salvat la ultimul audit. Confirm!'},{n:'George Man',i:'GM',tag:'ong',time:'3h',text:'Venim toată echipa la atelier, exact de asta aveam nevoie.'}]},
+ {id:'s4',a:{k:'p',id:'p2'},type:'anunt',time:'ieri',likes:61,attach:{k:'fund',id:3},
+  text:'Consiliul Județean a deschis Programul pentru tineret 2026: cofinanțare între 5.000 și 25.000 lei pentru proiecte derulate în județ. Termen 15 iulie — nu-l lăsați pe ultima sută de metri. Dacă aveți întrebări pe ghid, scrieți-mi aici.',cmts:[]},
+ {id:'s5',a:{k:'p',id:'p3'},type:'realizare',time:'ieri',likes:132,attach:null,
+  text:'200 de acțiuni de teren coordonate. Am început în 2019 cu 12 voluntari și un portbagaj de saci; azi suntem o rețea de peste 300 de oameni în toată zona Rarău–Giumalău. Mulțumesc fiecăruia care a urcat muntele cu noi. ⛰️',
+  cmts:[{n:'Dan Ilie',i:'DI',tag:'ong',time:'20h',text:'Fără tine nu exista Codrii Bucovinei. Punct.'}]},
+ {id:'s6',a:{k:'p',id:'p4'},type:'intrebare',time:'ieri',likes:17,attach:null,
+  text:'Întrebare pentru ONG-uri: ce folosiți pentru evidența voluntarilor și a orelor de implicare? Căutăm ceva simplu, în română, care să nu coste o avere. Excel-ul nostru a ajuns la 14 tab-uri și nu se mai poate.',
+  cmts:[{n:'Carmen Ursu',i:'CU',tag:'ong',time:'18h',text:'Tot Excel, dar cu un formular de check-in la fața locului. Îți trimit modelul.'},{n:'Radu Lung',i:'RL',tag:'ong',time:'16h',text:'Noi am trecut pe un tabel partajat + semnătură pe teren. Simplu și ține la audit.'}]},
+ {id:'s7',a:{k:'n',id:'dv'},type:'anunt',time:'acum 2 zile',likes:28,attach:{k:'col',id:4},
+  text:'Căutăm un sponsor local pentru echipamentul de plantare de pe valea Bistriței: mănuși, unelte și transport pentru 150 de voluntari. Orice companie din zonă care vrea să pună umărul — să vorbim.',cmts:[]},
+ {id:'s8',a:{k:'p',id:'p6'},type:'update',time:'acum 2 zile',likes:73,attach:{k:'ev',id:5},
+  text:'Duminica trecută am distribuit 140 de porții calde în centrul vechi din Rădăuți. Pe 28 iunie repetăm și avem nevoie de încă 12 voluntari la tura de dimineață. Cine vine?',
+  cmts:[{n:'Elena Costin',i:'EC',tag:'vol',time:'ieri',text:'Dacă nu sunt pe munte, vin cu doi colegi. Vă confirm joi.'}]},
+ {id:'s9',a:{k:'n',id:'pg'},type:'anunt',time:'acum 3 zile',likes:35,attach:{k:'col',id:7},
+  text:'Reminder: sala noastră comunitară din Gura Humorului (40 de locuri, videoproiector, ceai la discreție) e gratuită pentru orice ONG din județ. Calendarul pe iulie e încă liber în weekenduri.',cmts:[]},
+ {id:'s10',a:{k:'p',id:'p8'},type:'update',time:'acum 3 zile',likes:19,attach:{k:'col',id:6},
+  text:'Extindem cluburile de dezbateri în tot sudul județului. Dacă ești profesor în Fălticeni, Dolhasca sau împrejurimi și vrei un club la tine în liceu, oferim training complet și materiale.',cmts:[]}
+];
+
+const NOTIFS=[
+ {i:'ti-speakerphone',c:'purple',text:'<b>Mihai Popa</b> a deschis o consultare publică: Strategia de Tineret 2027–2030.',time:'acum 2h'},
+ {i:'ti-calendar-event',c:'info',text:'<b>Codrii Bucovinei</b> a publicat un eveniment: ecologizare în poiana Rarău.',time:'acum 3h'},
+ {i:'ti-heart',c:'coral',text:'<b>Elena Costin</b> și alte 11 persoane au apreciat activitatea ta din platformă.',time:'ieri'},
+ {i:'ti-clock',c:'amber',text:'Termen apropiat: <b>Programul județean pentru tineret</b> se închide pe 15 iulie.',time:'ieri'},
+ {i:'ti-users',c:'teal',text:'<b>Sara Ene</b> te-a invitat în echipa de voluntari pentru atelierul Erasmus+.',time:'acum 2 zile'}
+];
+const NC={info:['var(--info-bg)','var(--info)'],teal:['var(--teal-bg)','var(--teal)'],coral:['var(--coral-bg)','var(--coral)'],purple:['var(--purple-bg)','var(--purple)'],amber:['var(--amber-bg)','var(--amber)']};
+
+/* follows */
+const fkey=a=>a.k+':'+a.id;
+const isFollowed=k=>store.follows.includes(k);
+function toggleFollow(k,name){
+  if(isFollowed(k)){store.follows=store.follows.filter(x=>x!==k);}
+  else{store.follows.push(k);addNotif('ti-user-check','teal',`Urmărești acum <b>${name}</b>. Postările sale apar în filtrul „Urmăresc”.`);}
+  store.save();
+  if(current==='feed')renderFeed();
+  if(current==='ngo'&&k.startsWith('n:'))openNgo(k.slice(2));
+  if(current==='person'&&k.startsWith('p:'))openPerson(k.slice(2));
+}
+
+/* notifications */
+function allNotifs(){return store.notifs.concat(NOTIFS);}
+function addNotif(icon,color,html){store.notifs.unshift({i:icon,c:color,text:html,time:'acum'});store.save();updateBell();}
+function updateBell(){const un=allNotifs().length-store.nseen;document.getElementById('ndot').style.display=un>0?'block':'none';}
+function renderNotifs(){
+  const items=allNotifs().map(x=>{const c=NC[x.c]||NC.info;
+    return `<div class="nitem"><div class="ni" style="background:${c[0]};color:${c[1]}"><i class="ti ${x.i}"></i></div><div><div>${x.text}</div><div class="nt">${x.time}</div></div></div>`;}).join('');
+  document.getElementById('notif-panel').innerHTML=`<div class="nh">Notificări</div>${items}`;
+}
+function toggleNotifs(ev){
+  ev.stopPropagation();
+  const p=document.getElementById('notif-panel');
+  const open=p.classList.toggle('open');
+  if(open){renderNotifs();store.nseen=allNotifs().length;store.save();updateBell();}
+}
+document.addEventListener('click',e=>{
+  const p=document.getElementById('notif-panel');
+  if(p.classList.contains('open')&&!p.contains(e.target)&&!e.target.closest('#bell'))p.classList.remove('open');
+});
+
+/* feed */
+let feedFilter='all';const openCmts=new Set();
+const FEED_FILTERS=[['all','Toate'],['following','Urmăresc'],['consult','Consultări publice'],['ong','ONG-uri'],['pol','Policymakeri'],['vol','Voluntari & tineri']];
+function setFeedFilter(k){feedFilter=k;renderFeed();}
+const allPosts=()=>store.myPosts.concat(POSTS);
+function postAuthor(a){
+  if(a.k==='me')return{n:'Paul Grosu',i:'PG',sub:'voluntar · Suceava',bg:ROLE.vol[2],col:ROLE.vol[1],role:ROLE.vol[0],tag:'vol',click:''};
+  if(a.k==='p'){const p=PEOPLE.find(x=>x.id===a.id),ng=ngoById(p.ngo),r=ROLE[p.tag];
+    return{n:p.n,i:p.i,sub:`${p.role} · ${ng.name}`,bg:r[2],col:r[1],role:r[0],tag:p.tag,click:`openPerson('${p.id}')`};}
+  const n=ngoById(a.id),c=CAT[n.cat];
+  return{n:n.name,i:n.oi,sub:`organizație · ${n.city}`,bg:c.bg,col:c.color,role:'ONG',tag:'ong',click:`openNgo('${n.id}')`};
+}
+function attachCard(at){
+  if(!at)return'';
+  if(at.k==='ev'){const e=EVENTS.find(x=>x.id===at.id);if(!e)return'';const c=CAT[e.cat];
+    return `<div class="attach" onclick="openReg(${e.id})"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ti-calendar-event"></i></div><div class="ab"><h3>${e.title}</h3><div class="as">${e.d} ${e.m} · ${e.venue}, ${e.city} · ${e.cap-e.spots} locuri libere</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
+  if(at.k==='col'){const x=COLLABS.find(c=>c.id===at.id);if(!x)return'';const t=CTYPE[x.type],c=CAT[x.cat];
+    return `<div class="attach" onclick="openRespond(${x.id})"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ${t.i}"></i></div><div class="ab"><h3>${x.title}</h3><div class="as">${t.l} · ${x.loc} · termen ${x.deadline}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
+  if(at.k==='fund'){const f=FUND.find(x=>x.id===at.id);if(!f)return'';
+    return `<div class="attach" onclick="openFund(${f.id})"><div class="ai" style="background:var(--amber-bg);color:var(--amber)"><i class="ti ti-coin"></i></div><div class="ab"><h3>${f.title}</h3><div class="as">${f.funder} · ${f.amount} · termen ${f.deadline}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
+  return'';
+}
+function postCard(p){
+  const au=postAuthor(p.a),ty=PTYPE[p.type]||PTYPE.update;
+  const liked=store.likes.includes(p.id);
+  const myC=(store.myCmts[p.id]||[]).map(c=>({n:'Paul Grosu',i:'PG',tag:'vol',time:c.time,text:c.text,raw:true}));
+  const cmts=(p.cmts||[]).concat(myC);
+  const likeN=p.likes+(liked?1:0);
+  let headBtn='';
+  if(p.a.k==='me')headBtn=`<button class="followb on" title="Șterge postarea" onclick="delPost('${p.id}')"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
+  else{const fk=fkey(p.a);
+    headBtn=isFollowed(fk)?`<button class="followb on" onclick="toggleFollow('${fk}','${au.n}')"><i class="ti ti-check" style="font-size:13px"></i> Urmărit</button>`
+      :`<button class="followb" onclick="toggleFollow('${fk}','${au.n}')">+ Urmărește</button>`;}
+  const cHtml=openCmts.has(p.id)?`<div class="comments">${cmts.map(c=>{const r=ROLE[c.tag];
+      return `<div class="cmt"><div class="pav" style="background:${r[2]};color:${r[1]}">${c.i}</div><div class="bubble"><b>${c.n}</b><span class="rb2" style="background:${r[2]};color:${r[1]}">${r[0]}</span><span class="ct">${c.time}</span><div>${c.raw?esc(c.text):c.text}</div></div></div>`;}).join('')}
+    <div class="cmt-in"><div class="pav" style="background:var(--coral-bg);color:var(--coral);width:30px;height:30px;font-size:11px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0">PG</div><input id="cin-${p.id}" placeholder="Scrie un comentariu…" onkeydown="if(event.key==='Enter')addCmt('${p.id}')"><button class="btn primary sm" onclick="addCmt('${p.id}')" aria-label="Trimite comentariul"><i class="ti ti-send"></i></button></div></div>`:'';
+  return `<div class="post ${p.type==='consult'?'consult':''}">
+    <div class="phead"><div class="pav" style="background:${au.bg};color:${au.col}" onclick="${au.click}">${au.i}</div>
+      <div class="who"><h3 onclick="${au.click}">${au.n}</h3><span class="rb2" style="background:${au.bg};color:${au.col}">${au.role}</span>
+        <div class="sub2">${au.sub} · ${p.time}</div></div>${headBtn}</div>
+    ${p.type!=='update'?`<div class="tags" style="margin-bottom:8px"><span class="tag ${ty[1]}">${ty[0]}</span></div>`:''}
+    <div class="ptext">${p.a.k==='me'?esc(p.text):p.text}</div>
+    ${p.type==='consult'?'<div class="consult-note"><i class="ti ti-gavel"></i> Consultare oficială — comentariile intră în sinteza trimisă comisiei.</div>':''}
+    ${attachCard(p.attach)}
+    <div class="pstats"><span>${likeN} ${likeN===1?'susținere':'susțineri'}</span><span>${cmts.length} ${cmts.length===1?'comentariu':'comentarii'}</span></div>
+    <div class="pacts">
+      <button class="pact ${liked?'on':''}" onclick="likePost('${p.id}')"><i class="ti ${liked?'ti-heart-filled':'ti-heart'}"></i> Susțin</button>
+      <button class="pact ${openCmts.has(p.id)?'on':''}" onclick="toggleCmtsF('${p.id}')"><i class="ti ti-message-circle"></i> Comentează</button>
+      <button class="pact" onclick="sharePost('${p.id}')"><i class="ti ti-share-3"></i> Distribuie</button>
+    </div>${cHtml}</div>`;
+}
+function renderFeed(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  document.getElementById('feed-filters').innerHTML=FEED_FILTERS.map(([k,l])=>`<button class="chip ${feedFilter===k?'on':''}" onclick="setFeedFilter('${k}')">${l}</button>`).join('');
+  const items=allPosts().filter(p=>{
+    const au=postAuthor(p.a);
+    if(q&&!(p.text+au.n).toLowerCase().includes(q))return false;
+    if(feedFilter==='all')return true;
+    if(feedFilter==='following')return p.a.k==='me'||isFollowed(fkey(p.a))||(p.a.k==='p'&&isFollowed('n:'+PEOPLE.find(x=>x.id===p.a.id).ngo));
+    if(feedFilter==='consult')return p.type==='consult';
+    if(feedFilter==='pol')return au.tag==='pol';
+    if(feedFilter==='ong')return au.tag==='ong';
+    if(feedFilter==='vol')return au.tag==='vol'||au.tag==='youth';
+    return true;});
+  const list=items.length?items.map(postCard).join(''):`<div class="empty">${feedFilter==='following'?'Nu urmărești încă pe nimeni. Apasă „Urmărește” pe o organizație sau o persoană și postările lor apar aici.':'Nicio postare nu se potrivește.'}</div>`;
+  document.getElementById('feed-list').innerHTML=`<div class="composer" onclick="openComposer()"><div class="avatar">PG</div><div class="fake">La ce lucrezi, Paul? Împărtășește cu comunitatea…</div><i class="ti ti-pencil-plus" style="color:var(--text-3);font-size:20px"></i></div>${list}`;
+  document.getElementById('feed-aside').innerHTML=feedAsideHtml();
+}
+function feedAsideHtml(){
+  const suggP=PEOPLE.filter(p=>['p2','p3','p4'].includes(p.id)&&!isFollowed('p:'+p.id)).slice(0,2);
+  const suggN=NGOS.filter(n=>!isFollowed('n:'+n.id)).slice(0,2);
+  const rows=[
+    ...suggP.map(p=>{const r=ROLE[p.tag],ng=ngoById(p.ngo);
+      return `<div class="person"><div class="oa" style="width:36px;height:36px;border-radius:50%;background:${r[2]};color:${r[1]};font-size:12px">${p.i}</div><div class="body"><h3 style="cursor:pointer" onclick="openPerson('${p.id}')">${p.n}</h3><div class="role">${r[0]} · ${ng.name}</div></div><button class="btn sm" onclick="toggleFollow('p:${p.id}','${p.n}')">Urmărește</button></div>`;}),
+    ...suggN.map(n=>{const c=CAT[n.cat];
+      return `<div class="person"><div class="oa" style="width:36px;height:36px;background:${c.bg};color:${c.color};font-size:12px;border-radius:9px">${n.oi}</div><div class="body"><h3 style="cursor:pointer" onclick="openNgo('${n.id}')">${n.name}</h3><div class="role">ONG · ${n.city}</div></div><button class="btn sm" onclick="toggleFollow('n:${n.id}','${n.name}')">Urmărește</button></div>`;})
+  ].join('');
+  return `<div class="panel"><h4><i class="ti ti-chart-bar"></i> Comunitatea azi</h4>
+      <div class="stat"><span>Postări săptămâna asta</span><b>${allPosts().length+13}</b></div>
+      <div class="stat"><span>Consultări publice deschise</span><b>${allPosts().filter(p=>p.type==='consult').length}</b></div>
+      <div class="stat"><span>Urmărești</span><b>${store.follows.length}</b></div></div>
+    <div class="panel"><h4><i class="ti ti-user-plus"></i> Pe cine să urmărești</h4>${rows||'<div style="font-size:13px;color:var(--text-3)">Urmărești deja toate sugestiile. 🎉</div>'}</div>`;
+}
+function likePost(id){const i=store.likes.indexOf(id);if(i>-1)store.likes.splice(i,1);else store.likes.push(id);store.save();renderFeed();}
+function toggleCmtsF(id){if(openCmts.has(id))openCmts.delete(id);else openCmts.add(id);renderFeed();if(openCmts.has(id)){const el=document.getElementById('cin-'+id);if(el)el.focus();}}
+function addCmt(id){
+  const el=document.getElementById('cin-'+id);if(!el)return;
+  const txt=el.value.trim();if(!txt)return;
+  (store.myCmts[id]=store.myCmts[id]||[]).push({text:txt,time:'acum'});
+  openCmts.add(id);store.save();
+  const p=allPosts().find(x=>x.id===id);
+  if(p&&p.type==='consult')addNotif('ti-gavel','purple','Comentariul tău a fost înregistrat în <b>consultarea publică</b>. Vei primi sinteza finală.');
+  renderFeed();
+}
+function delPost(id){store.myPosts=store.myPosts.filter(p=>p.id!==id);delete store.myCmts[id];store.save();renderFeed();}
+function sharePost(id){done('Gata de distribuit','Am copiat linkul postării (demo). Îl poți trimite pe WhatsApp, email sau în grupul de voluntari.');openModal();}
+function openComposer(){
+  const evO=EVENTS.map(e=>`<option value="ev:${e.id}">Eveniment: ${e.title}</option>`).join('');
+  const cO=COLLABS.map(c=>`<option value="col:${c.id}">Colaborare: ${c.title}</option>`).join('');
+  const fO=FUND.map(f=>`<option value="fund:${f.id}">Finanțare: ${f.title}</option>`).join('');
+  document.getElementById('modal-content').innerHTML=`
+    <h2>Postare nouă</h2>
+    <div class="org" style="margin:6px 0 12px"><div class="avatar" style="width:28px;height:28px;font-size:11px">PG</div> Paul Grosu · postezi ca <b>voluntar</b></div>
+    <div class="field"><textarea id="c-text" placeholder="Ce vrei să afle comunitatea? Un update, o întrebare, un anunț…" style="min-height:110px"></textarea></div>
+    <div class="field"><label>Tip postare</label><select id="c-type"><option value="update">Actualizare</option><option value="anunt">Anunț</option><option value="intrebare">Întrebare</option><option value="realizare">Reușită</option></select></div>
+    <div class="field"><label>Atașează (opțional)</label><select id="c-attach"><option value="">Fără atașament</option><optgroup label="Evenimente">${evO}</optgroup><optgroup label="Colaborări">${cO}</optgroup><optgroup label="Finanțări">${fO}</optgroup></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="publishPost()"><i class="ti ti-send"></i> Publică</button></div>`;
+  openModal();
+  document.getElementById('c-text').focus();
+}
+function publishPost(){
+  const el=document.getElementById('c-text');
+  const txt=el.value.trim();
+  if(!txt){el.focus();return;}
+  const type=document.getElementById('c-type').value;
+  const atv=document.getElementById('c-attach').value;
+  let attach=null;
+  if(atv){const parts=atv.split(':');attach={k:parts[0],id:+parts[1]};}
+  store.myPosts.unshift({id:'u'+Date.now(),a:{k:'me'},type,time:'acum',text:txt,attach,likes:0,cmts:[]});
+  store.save();
+  addNotif('ti-send','info','Postarea ta a fost publicată în flux.');
+  done('Publicat!','Postarea ta e acum vizibilă în fluxul comunității din Bucovina.');
+  if(current==='feed')renderFeed();
+}
+
+/* ROUTER */
+let current='events',evFilter='all',mapFilter='all',colFilter='all';
+const TB={
+  home:['Bună, Paul','Ce se întâmplă azi în societatea civilă suceveană','Acțiune rapidă','ti-bolt'],
+  events:['Hub evenimente','Tot ce se întâmplă în ecosistemul civic din Suceava','Propune eveniment','ti-plus'],
+  map:['Harta ONG-urilor din Suceava','Explorează organizațiile și oamenii din spatele lor','Înregistrează ONG','ti-plus'],
+  collabs:['Colaborări & nevoi','Cereri și oferte din ecosistemul civic sucevean','Postează o colaborare','ti-plus'],
+  people:['Oameni','Rețeaua de oameni din spatele organizațiilor','Invită o persoană','ti-user-plus'],
+  funding:['Finanțări & granturi','Apeluri deschise pentru ONG-urile sucevene','Adaugă oportunitate','ti-plus'],
+  person:['Profil persoană','','Contactează','ti-mail'],
+  resources:['Resurse','Ghiduri, șabloane și date pentru organizații','Propune o resursă','ti-plus'],
+  ngo:['Profil organizație','','Urmărește','ti-bell']
+};
+function go(v){
+  current=v;
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.getElementById('view-'+v).classList.add('on');
+  document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.nav===v));
+  const [t,s,c,ic]=TB[v]||TB.events;
+  document.getElementById('tb-title').innerHTML=`<h1>${t}</h1>${s?`<div class="sub">${s}</div>`:''}`;
+  document.getElementById('tb-cta').innerHTML=`<i class="ti ${ic}"></i> ${c}`;
+  document.getElementById('q').value='';
+  if(v==='home')renderHome();
+  if(v==='events')renderEvents();
+  if(v==='map'){renderNgoList();renderPins();}
+  if(v==='collabs')renderCollabs();
+  if(v==='people')renderPeople();
+  if(v==='funding')renderFunding();
+  if(v==='resources')renderResources();
+  closeSide();
+  window.scrollTo(0,0);
+}
+function onSearch(){if(current==='events')renderEvents();if(current==='map')renderNgoList();if(current==='collabs')renderCollabs();if(current==='people')renderPeople();if(current==='funding')renderFunding();if(current==='resources')renderResources();}
+
+/* HOME */
+function renderHome(){
+  const events3=EVENTS.slice(0,3).map(e=>{const c=CAT[e.cat],ng=ngoById(e.ngo);
+    return `<div class="row"><div class="datebox"><div class="d">${e.d}</div><div class="m">${e.m}</div></div>
+      <div class="rb"><h3>${e.title}</h3><div class="rs"><span class="tag ${c.cls}" style="font-size:10px;padding:1px 7px">${c.label}</span><i class="ti ti-map-pin"></i> ${e.city}</div></div>
+      <button class="btn primary sm" onclick="openReg(${e.id})">Înscrie-te</button></div>`;}).join('');
+
+  const urgent=COLLABS.filter(x=>/^\d/.test(x.deadline)).slice(0,4).map(x=>{const t=CTYPE[x.type],c=CAT[x.cat],ng=ngoById(x.ngo);
+    return `<div class="crow" onclick="openRespond(${x.id})"><div class="ci" style="background:${c.bg};color:${c.color}"><i class="ti ${t.i}"></i></div>
+      <div class="cb"><h3>${x.title}</h3><div class="cs"><i class="ti ti-clock deadline" style="color:var(--coral)"></i> termen ${x.deadline} · ${ng.name}</div></div></div>`;}).join('');
+
+  const counts={};NGOS.forEach(n=>counts[n.cat]=(counts[n.cat]||0)+1);
+  const dots=NGOS.map(n=>`<div class="mdot" style="left:${n.x}%;top:${n.y}%;background:${CAT[n.cat].color}"></div>`).join('');
+
+  const spots=NGOS.slice(0,3).map(n=>{const c=CAT[n.cat];
+    return `<div class="spot" onclick="openNgo('${n.id}')"><div class="oa" style="background:${c.bg};color:${c.color};width:34px;height:34px;border-radius:9px;font-size:13px">${n.oi}</div>
+      <div class="sb"><h3>${n.name}</h3><div class="ss">${n.city} · ${n.members} membri</div></div><i class="ti ti-chevron-right" style="color:var(--text-3)"></i></div>`;}).join('');
+
+  const myEv=EVENTS.filter(e=>isReg(e.id));
+  const myF=FUND.filter(f=>isSavedF(f.id));
+  const actItems=myEv.length?myEv.map(e=>`<div class="row"><div class="datebox"><div class="d">${e.d}</div><div class="m">${e.m}</div></div><div class="rb"><h3>${e.title}</h3><div class="rs"><i class="ti ti-circle-check" style="color:var(--teal)"></i> Înscris · ${e.city}</div></div><button class="btn sm" onclick="go('events')">Vezi</button></div>`).join(''):'<div class="pm" style="color:var(--text-3);font-size:13px;padding:4px 0 2px">Încă nu te-ai înscris la nimic — explorează evenimentele și colaborările de mai jos.</div>';
+  const savedLine=myF.length?`<div style="font-size:12px;color:var(--text-2);border-top:1px solid var(--border);padding-top:10px;margin-top:8px"><i class="ti ti-bookmark" style="color:var(--info);vertical-align:-2px"></i> ${myF.length} ${myF.length===1?'finanțare salvată':'finanțări salvate'} · <span class="seclink" style="margin:0" onclick="go('funding')">vezi</span></div>`:'';
+  document.getElementById('view-home').innerHTML=`
+    <div class="metrics">
+      <div class="metric" onclick="go('map')"><div class="ml"><i class="ti ti-building-community" style="color:var(--info)"></i> ONG-uri active</div><div class="mv">${NGOS.length}</div><div class="md">+2 luna asta</div></div>
+      <div class="metric"><div class="ml"><i class="ti ti-users" style="color:var(--coral)"></i> Voluntari</div><div class="mv">1.060</div><div class="md">+48 săptămâna asta</div></div>
+      <div class="metric" onclick="go('events')"><div class="ml"><i class="ti ti-calendar-event" style="color:var(--purple)"></i> Evenimente iunie</div><div class="mv">34</div><div class="md">7 în următoarele zile</div></div>
+      <div class="metric" onclick="go('collabs')"><div class="ml"><i class="ti ti-puzzle" style="color:var(--teal)"></i> Colaborări deschise</div><div class="mv">${COLLABS.length}</div><div class="md">4 cu termen apropiat</div></div>
+    </div>
+    <div class="home-grid">
+      <div>
+        <div class="sec"><h2><i class="ti ti-bookmark"></i> Activitatea mea</h2>${actItems}${savedLine}</div>
+        <div class="sec"><h2><i class="ti ti-calendar-event"></i> Evenimente apropiate <span class="seclink" onclick="go('events')">Vezi toate <i class="ti ti-arrow-right" style="font-size:13px"></i></span></h2>${events3}</div>
+        <div class="sec"><h2><i class="ti ti-flame"></i> Colaborări urgente <span class="seclink" onclick="go('collabs')">Vezi toate <i class="ti ti-arrow-right" style="font-size:13px"></i></span></h2>${urgent}</div>
+      </div>
+      <div>
+        <div class="sec"><h2><i class="ti ti-map-2"></i> Harta județului</h2>
+          <div class="minimap" onclick="go('map')">
+            <svg viewBox="0 0 600 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="600" height="480" fill="#e7e0cf"/><path d="M40 250 L80 150 L150 110 L230 140 L300 100 L370 130 L450 95 L540 150 L560 230 L520 320 L430 360 L330 350 L250 380 L160 345 L90 300 Z" fill="#e1ead6" stroke="#b0bd90" stroke-width="3"/><path d="M48 254 L92 165 L126 212 L170 142 L212 214 L246 172 L280 254 Z" fill="#bcbfb0"/><path d="M170 142 l12 21 -24 0 z" fill="#f6f1e6"/></svg>
+            ${dots}<div class="mover"><span><i class="ti ti-map-pin" style="font-size:12px;vertical-align:-2px"></i> ${NGOS.length} ONG-uri în Suceava — deschide harta</span></div>
+          </div>
+        </div>
+        <div class="sec"><h2><i class="ti ti-star"></i> ONG-uri în prim-plan <span class="seclink" onclick="go('map')">Toate</span></h2>${spots}</div>
+        <div class="sec" style="background:var(--info-bg);border-color:#bcd6e3">
+          <h2 style="color:var(--info)"><i class="ti ti-bolt"></i> Pentru tine</h2>
+          <p style="font-size:13px;color:var(--info);margin-bottom:12px">${myEv.length?`Ești înscris la ${myEv.length} ${myEv.length===1?'eveniment':'evenimente'}. `:''}Sunt ${COLLABS.filter(x=>x.type==='vol').length} acțiuni de voluntariat care caută oameni în Suceava.</p>
+          <button class="btn" style="width:100%;justify-content:center;background:var(--info);color:#fff;border-color:var(--info)" onclick="go('collabs')">Vezi unde poți ajuta</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* EVENTS */
+const EV_FILTERS=[['all','Toate'],['edu','Educație'],['env','Mediu'],['soc','Social'],['civ','Drepturi civice'],['online','Doar online'],['onsite','Fizic']];
+function renderEvFilters(){document.getElementById('ev-filters').innerHTML=EV_FILTERS.map(([k,l])=>`<button class="chip ${evFilter===k?'on':''}" onclick="setEvFilter('${k}')">${l}</button>`).join('');}
+function setEvFilter(k){evFilter=k;renderEvents();}
+function renderEvents(){
+  renderEvFilters();
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  const items=EVENTS.filter(e=>{const ng=ngoById(e.ngo);if(q&&!(e.title+ng.name+e.city).toLowerCase().includes(q))return false;if(evFilter==='all')return true;if(evFilter==='online')return e.online;if(evFilter==='onsite')return !e.online;return e.cat===evFilter;});
+  const list=document.getElementById('ev-list');
+  if(!items.length){list.innerHTML='<div class="empty">Niciun eveniment nu se potrivește.</div>';return;}
+  let html='',lastM='';
+  items.forEach(e=>{
+    if(e.m!==lastM){html+=`<div class="month-label">${e.m==='iun'?'Iunie 2026':'Iulie 2026'}</div>`;lastM=e.m;}
+    const c=CAT[e.cat],ng=ngoById(e.ngo),pct=Math.round(e.spots/e.cap*100),left=e.cap-e.spots;
+    html+=`<div class="ev"><div class="date"><div class="d">${e.d}</div><div class="m">${e.m}</div><div class="day">${e.day}</div></div>
+      <div class="body"><div class="tags"><span class="tag ${c.cls}">${c.label}</span>${e.online?'<span class="tag t-on">Online</span>':''}</div>
+        <h3>${e.title}</h3>
+        <div class="meta"><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span></div>
+        <div class="foot"><div class="org link" onclick="openNgo('${ng.id}')"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> ${ng.name}</div>
+          <div class="spots"><div class="bar"><i style="width:${pct}%"></i></div> ${left} locuri</div></div></div>
+      <div style="display:flex;align-items:center">${isReg(e.id)?`<button class="btn sm" style="color:var(--teal);border-color:var(--teal)" onclick="unregisterEvent(${e.id})"><i class="ti ti-check"></i> Înscris</button>`:`<button class="btn primary sm" onclick="openReg(${e.id})">Înscrie-te</button>`}</div></div>`;
+  });
+  list.innerHTML=html;
+}
+
+/* MAP */
+const MAP_FILTERS=[['all','Toate'],['edu','Educație'],['env','Mediu'],['soc','Social'],['civ','Drepturi civice']];
+function renderMapFilters(){document.getElementById('map-filters').innerHTML=MAP_FILTERS.map(([k,l])=>`<button class="chip ${mapFilter===k?'on':''}" onclick="setMapFilter('${k}')">${l}</button>`).join('');}
+function setMapFilter(k){mapFilter=k;renderNgoList();renderPins();}
+function mapMatch(n){const q=(document.getElementById('q').value||'').toLowerCase();if(q&&!(n.name+n.city).toLowerCase().includes(q))return false;return mapFilter==='all'||n.cat===mapFilter;}
+function renderPins(){
+  document.getElementById('map-pins').innerHTML=NGOS.filter(mapMatch).map(n=>{const c=CAT[n.cat];
+    return `<div class="pin" id="pin-${n.id}" style="left:${n.x}%;top:${n.y}%" onmouseenter="hlCard('${n.id}',1)" onmouseleave="hlCard('${n.id}',0)" onclick="openNgo('${n.id}')">
+      <div class="dot" style="background:${c.color}"><span>${n.oi}</span></div><div class="lbl">${n.city}</div></div>`;}).join('');
+}
+function renderNgoList(){
+  renderMapFilters();
+  const items=NGOS.filter(mapMatch);
+  const el=document.getElementById('ng-list');
+  if(!items.length){el.innerHTML='<div class="empty">Niciun ONG găsit.</div>';return;}
+  el.innerHTML=items.map(n=>{const c=CAT[n.cat];
+    return `<div class="ng-card" id="card-${n.id}" onmouseenter="hlPin('${n.id}',1)" onmouseleave="hlPin('${n.id}',0)" onclick="openNgo('${n.id}')">
+      <div class="oa" style="background:${c.bg};color:${c.color};width:40px;height:40px;border-radius:9px;font-size:14px">${n.oi}</div>
+      <div class="body"><h3>${n.name}</h3>
+        <div class="sm"><i class="ti ti-map-pin"></i> ${n.city} · <span style="color:${c.color}">${c.label}</span></div>
+        <div class="sm" style="margin-top:2px"><i class="ti ti-users"></i> ${n.members} membri · din ${n.founded}</div></div>
+      <i class="ti ti-chevron-right chev"></i></div>`;}).join('');
+}
+function hlCard(id,on){const c=document.getElementById('card-'+id);if(c)c.classList.toggle('hl',!!on);}
+function hlPin(id,on){const p=document.getElementById('pin-'+id);if(p)p.classList.toggle('active',!!on);}
+
+/* COLLABS */
+const COL_FILTERS=[['all','Toate'],['partner','Caut parteneri'],['vol','Caut voluntari'],['offer','Ofer ajutor'],['fund','Caut finanțare']];
+function renderColFilters(){document.getElementById('col-filters').innerHTML=COL_FILTERS.map(([k,l])=>`<button class="chip ${colFilter===k?'on':''}" onclick="setColFilter('${k}')">${l}</button>`).join('');}
+function setColFilter(k){colFilter=k;renderCollabs();}
+function renderCollabs(){
+  renderColFilters();
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  const items=COLLABS.filter(x=>{const ng=ngoById(x.ngo);if(q&&!(x.title+ng.name+x.loc).toLowerCase().includes(q))return false;return colFilter==='all'||x.type===colFilter;});
+  const grid=document.getElementById('col-grid');
+  if(!items.length){grid.innerHTML='<div class="empty">Nicio colaborare nu se potrivește.</div>';return;}
+  grid.innerHTML=items.map(x=>{const t=CTYPE[x.type],c=CAT[x.cat],ng=ngoById(x.ngo);
+    return `<div class="col">
+      <div class="top"><span class="ctype ${t.cls}"><i class="ti ${t.i}" style="font-size:13px"></i> ${t.l}</span><span class="tag ${c.cls}">${c.label}</span></div>
+      <h3>${x.title}</h3>
+      <p class="cdesc">${x.desc}</p>
+      <div class="cmeta"><span><i class="ti ti-map-pin"></i> ${x.loc}</span><span class="${x.deadline.match(/^\d/)?'deadline':''}"><i class="ti ti-clock"></i> ${x.deadline}</span></div>
+      <div class="cfoot"><div class="org link" onclick="openNgo('${ng.id}')"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> ${ng.name}</div>
+        <button class="btn primary sm" onclick="openRespond(${x.id})">Răspunde</button></div></div>`;}).join('');
+}
+
+/* PEOPLE */
+let pplFilter='all';
+const PPL_FILTERS=[['all','Toți'],['ong','ONG-uri'],['pol','Policymakeri'],['vol','Voluntari'],['youth','Tineri']];
+function setPplFilter(k){pplFilter=k;renderPeople();}
+function renderPeople(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  const items=PEOPLE.filter(p=>{const ng=ngoById(p.ngo);if(q&&!(p.n+p.role+ng.name).toLowerCase().includes(q))return false;return pplFilter==='all'||p.tag===pplFilter;});
+  const chips=PPL_FILTERS.map(([k,l])=>`<button class="chip ${pplFilter===k?'on':''}" onclick="setPplFilter('${k}')">${l}</button>`).join('');
+  const cards=items.length?items.map(p=>{const r=ROLE[p.tag],ng=ngoById(p.ngo);
+    return `<div class="pcard" onclick="openPerson('${p.id}')"><div class="pav" style="background:${r[2]};color:${r[1]}">${p.i}</div>
+      <div class="pb"><h3>${p.n}</h3><div class="pr">${p.role}</div><div class="po">${ng.name}</div></div>
+      <span class="ptag" style="background:${r[2]};color:${r[1]}">${r[0]}</span></div>`;}).join(''):'<div class="empty">Nicio persoană găsită.</div>';
+  document.getElementById('view-people').innerHTML=`<div class="filters">${chips}</div><div class="ppl-grid">${cards}</div>`;
+}
+function openPerson(id){
+  const p=PEOPLE.find(x=>x.id===id),r=ROLE[p.tag],ng=ngoById(p.ngo),c=CAT[ng.cat];
+  const evs=EVENTS.filter(e=>ng.events.includes(e.id)).slice(0,3).map(e=>`<div class="proj"><div class="pt"><h3>${e.title}</h3><div class="pm">${e.d} ${e.m} · ${e.city}</div></div><button class="btn sm" onclick="openReg(${e.id})">Detalii</button></div>`).join('')||'<div class="pm" style="color:var(--text-3);font-size:13px">Nicio acțiune programată momentan.</div>';
+  document.getElementById('view-person').innerHTML=`
+    <a class="back" onclick="go('people')"><i class="ti ti-arrow-left"></i> Înapoi la oameni</a>
+    <div class="ng-head"><div class="big" style="background:${r[2]};color:${r[1]};border-radius:50%">${p.i}</div>
+      <div style="flex:1;min-width:200px"><h1>${p.n}</h1><div class="tagline">${p.role}</div>
+        <div class="facts"><span><i class="ti ti-id-badge"></i> <span style="color:${r[1]}">${r[0]}</span></span><span><i class="ti ti-building-community"></i> ${ng.name}</span><span><i class="ti ti-map-pin"></i> ${ng.city}</span></div></div>
+      <div class="ng-actions"><button class="btn primary"><i class="ti ti-mail"></i> Contactează</button></div></div>
+    <div class="grid2"><div>
+      <div class="sec"><h2><i class="ti ti-user"></i> Despre</h2><p class="bio">${p.bio}</p></div>
+      <div class="sec"><h2><i class="ti ti-calendar-event"></i> Implicare recentă</h2>${evs}</div>
+    </div><div>
+      <div class="sec"><h2><i class="ti ti-building-community"></i> Organizație</h2>
+        <div class="ng-card" onclick="openNgo('${ng.id}')"><div class="oa" style="background:${c.bg};color:${c.color};width:40px;height:40px;border-radius:9px;font-size:14px">${ng.oi}</div><div class="body"><h3>${ng.name}</h3><div class="sm"><i class="ti ti-map-pin"></i> ${ng.city} · <span style="color:${c.color}">${c.label}</span></div></div><i class="ti ti-chevron-right chev"></i></div>
+      </div>
+      <div class="sec"><h2><i class="ti ti-address-book"></i> Contact</h2>
+        <div class="contact-row"><i class="ti ti-mail"></i> <a href="#">${p.email}</a></div></div>
+    </div></div>`;
+  go('person');
+}
+
+/* FUNDING */
+let fundFilter='all';
+const FUND_FILTERS=[['all','Toate'],['eu','Europene'],['local','Locale & naționale'],['privat','Private'],['premiu','Premii']];
+function setFundFilter(k){fundFilter=k;renderFunding();}
+function renderFunding(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  const items=FUND.filter(f=>{if(q&&!(f.title+f.funder).toLowerCase().includes(q))return false;return fundFilter==='all'||f.type===fundFilter;});
+  const chips=FUND_FILTERS.map(([k,l])=>`<button class="chip ${fundFilter===k?'on':''}" onclick="setFundFilter('${k}')">${l}</button>`).join('');
+  const cards=items.length?items.map(f=>{const t=FTYPE[f.type];
+    const tags=f.cats.map(cc=>`<span class="tag ${CAT[cc].cls}">${CAT[cc].label}</span>`).join('');
+    return `<div class="fund"><div class="ftop"><span class="ftag ${t[1]}">${t[0]}</span>${f.status==='soon'?'<span class="fsoon">se închide curând</span>':''}</div>
+      <h3>${f.title}</h3><div class="ffunder">${f.funder}</div>
+      <div class="famount">${f.amount}</div>
+      <div class="fdl"><i class="ti ti-calendar-due"></i> termen-limită: ${f.deadline}</div>
+      <p class="fdesc">${f.desc}</p>
+      <div class="fmeta">${tags}</div>
+      <div class="ffoot">${isSavedF(f.id)?`<button class="btn" style="color:var(--info);border-color:var(--info)" onclick="toggleSavedF(${f.id})"><i class="ti ti-bookmark"></i> Salvat</button>`:`<button class="btn" onclick="toggleSavedF(${f.id})"><i class="ti ti-bookmark"></i> Salvează</button>`}<button class="btn primary" onclick="openFund(${f.id})">Aplică</button></div></div>`;}).join(''):'<div class="empty">Nicio finanțare găsită.</div>';
+  document.getElementById('view-funding').innerHTML=`<div class="filters">${chips}</div><div class="fund-grid">${cards}</div>`;
+}
+function openFund(id){
+  const f=FUND.find(x=>x.id===id),t=FTYPE[f.type];
+  const tags=f.cats.map(cc=>`<span class="tag ${CAT[cc].cls}">${CAT[cc].label}</span>`).join('');
+  document.getElementById('modal-content').innerHTML=`
+    <div class="tags" style="margin-bottom:10px"><span class="ftag ${t[1]}">${t[0]}</span></div>
+    <h2>${f.title}</h2><div class="org" style="margin-bottom:2px">${f.funder}</div>
+    <div class="mmeta"><span><i class="ti ti-coin"></i> ${f.amount}</span><span><i class="ti ti-calendar-due"></i> termen-limită ${f.deadline}</span><span><i class="ti ti-tag"></i> ${f.cats.map(cc=>CAT[cc].label).join(', ')}</span></div>
+    <p class="desc">${f.desc}</p>
+    <div class="field" style="margin-top:14px"><label>Aplici în numele</label><select>${NGOS.map(n=>`<option>${n.name}</option>`).join('')}</select></div>
+    <div class="field"><label>Sumă solicitată</label><input placeholder="ex. 25.000 lei"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="saveF(${f.id});done('Aplicație începută!','Ți-am pregătit dosarul pentru <b>${f.title.replace(/'/g,'’')}</b>. L-am adăugat la finanțările tale urmărite.')">Trimite intenția</button></div>`;
+  openModal();
+}
+
+/* NGO DETAIL */
+function openNgo(id){
+  const n=ngoById(id),c=CAT[n.cat];
+  const people=n.people.map(p=>{const r=ROLE[p.t];return `<div class="person"><div class="oa" style="width:38px;height:38px;border-radius:50%;background:${r[2]};color:${r[1]};font-size:13px">${p.i}</div><div class="body"><h3>${p.n}</h3><div class="role">${p.r}</div></div><span class="ptag" style="background:${r[2]};color:${r[1]}">${r[0]}</span></div>`;}).join('');
+  const projects=n.projects.map(p=>{const sc=p.s==='active'?'s-active':p.s==='plan'?'s-plan':'s-done';const sl=p.s==='active'?'în derulare':p.s==='plan'?'planificat':'încheiat';return `<div class="proj"><div class="pt"><h3>${p.t}</h3><div class="pm">${p.m}</div></div><span class="pstatus ${sc}">${sl}</span></div>`;}).join('');
+  const myCol=COLLABS.filter(x=>x.ngo===id);
+  const needs=myCol.length?myCol.map(x=>{const t=CTYPE[x.type];return `<div class="need" onclick="openRespond(${x.id})"><h3>${x.title}</h3><div class="nm"><i class="ti ${t.i}"></i> ${t.l} · ${x.loc} · ${x.deadline}</div></div>`;}).join(''):'<div class="pm" style="color:var(--text-3);font-size:13px">Nicio colaborare deschisă.</div>';
+  const evs=EVENTS.filter(e=>n.events.includes(e.id)).map(e=>`<div class="proj"><div class="pt"><h3>${e.title}</h3><div class="pm">${e.d} ${e.m} · ${e.city}</div></div><button class="btn sm" onclick="openReg(${e.id})">Înscrie-te</button></div>`).join('')||'<div class="pm" style="color:var(--text-3);font-size:13px">Niciun eveniment programat.</div>';
+
+  document.getElementById('view-ngo').innerHTML=`
+    <a class="back" onclick="go('map')"><i class="ti ti-arrow-left"></i> Înapoi la hartă</a>
+    <div class="ng-head"><div class="big" style="background:${c.bg};color:${c.color}">${n.oi}</div>
+      <div style="flex:1;min-width:200px"><h1>${n.name}</h1><div class="tagline">${n.tagline}</div>
+        <div class="facts"><span><i class="ti ti-map-pin"></i> ${n.city}, jud. Suceava</span><span><i class="ti ti-tag"></i> <span style="color:${c.color}">${c.label}</span></span><span><i class="ti ti-users"></i> ${n.members} membri</span><span><i class="ti ti-calendar"></i> înființată ${n.founded}</span></div></div>
+      <div class="ng-actions"><button class="btn primary"><i class="ti ti-bell"></i> Urmărește</button><button class="btn"><i class="ti ti-mail"></i> Contact</button></div></div>
+    <div class="grid2"><div>
+      <div class="sec"><h2><i class="ti ti-users-group"></i> Oameni-cheie <span class="count">${n.people.length}</span></h2>${people}</div>
+      <div class="sec"><h2><i class="ti ti-folder"></i> Proiecte <span class="count">${n.projects.length}</span></h2>${projects}</div>
+      <div class="sec"><h2><i class="ti ti-calendar-event"></i> Evenimente viitoare</h2>${evs}</div>
+    </div><div>
+      <div class="sec"><h2><i class="ti ti-puzzle"></i> Nevoi & colaborări <span class="count">${myCol.length}</span></h2>${needs}</div>
+      <div class="sec"><h2><i class="ti ti-address-book"></i> Contact</h2>
+        <div class="contact-row"><i class="ti ti-world"></i> <a href="#">${n.web}</a></div>
+        <div class="contact-row"><i class="ti ti-mail"></i> <a href="#">${n.email}</a></div>
+        <div class="contact-row"><i class="ti ti-phone"></i> ${n.phone}</div></div>
+    </div></div>`;
+  go('ngo');
+}
+
+/* MODALS */
+function openReg(id){
+  const e=EVENTS.find(x=>x.id===id),c=CAT[e.cat],ng=ngoById(e.ngo);
+  document.getElementById('modal-content').innerHTML=`
+    <div class="tags" style="margin-bottom:10px"><span class="tag ${c.cls}">${c.label}</span>${e.online?'<span class="tag t-on">Online</span>':''}</div>
+    <h2>${e.title}</h2>
+    <div class="org"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> Organizat de ${ng.name}</div>
+    <div class="mmeta"><span><i class="ti ti-calendar"></i> ${e.d} ${e.m==='iun'?'iunie':'iulie'} 2026, ${e.day}</span><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span><span><i class="ti ti-users"></i> ${e.cap-e.spots} din ${e.cap} locuri</span></div>
+    <p class="desc">${e.desc}</p>
+    <div class="field" style="margin-top:14px"><label>Nume complet</label><input value="Paul Grosu"></div>
+    <div class="field"><label>Email</label><input value="paulgrosu64@email.ro"></div>
+    <div class="field"><label>Particip ca</label><select><option>Voluntar individual</option><option>Reprezentant ONG</option><option>Tânăr / elev / student</option></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="registerEvent(${e.id});refresh();done('Te-ai înscris!','Ai un loc rezervat la <b>${e.title.replace(/'/g,'’')}</b>. Ți-am trimis confirmarea pe email și am adăugat evenimentul în calendar.')">Confirmă înscrierea</button></div>`;
+  openModal();
+}
+function openRespond(id){
+  const x=COLLABS.find(c=>c.id===id),t=CTYPE[x.type],c=CAT[x.cat],ng=ngoById(x.ngo);
+  document.getElementById('modal-content').innerHTML=`
+    <div class="tags" style="margin-bottom:10px"><span class="ctype ${t.cls}"><i class="ti ${t.i}" style="font-size:13px"></i> ${t.l}</span><span class="tag ${c.cls}">${c.label}</span></div>
+    <h2>${x.title}</h2>
+    <div class="org"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> ${ng.name}</div>
+    <div class="mmeta"><span><i class="ti ti-map-pin"></i> ${x.loc}</span><span><i class="ti ti-clock"></i> ${x.deadline}</span></div>
+    <p class="desc">${x.desc}</p>
+    <div class="field" style="margin-top:14px"><label>Răspund ca</label><select><option>Voluntar individual</option><option>Reprezentant ONG</option><option>Finanțator / sponsor</option><option>Instituție publică</option></select></div>
+    <div class="field"><label>Mesaj pentru ${ng.name}</label><textarea placeholder="Spune pe scurt cum poți contribui…">Salut! Aș vrea să mă implic în această colaborare.</textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="done('Mesaj trimis!','${ng.name} a primit răspunsul tău la <b>${x.title.replace(/'/g,'’')}</b> și te poate contacta direct.')">Trimite răspunsul</button></div>`;
+  openModal();
+}
+function done(title,msg){
+  document.getElementById('modal-content').innerHTML=`<div class="success"><div class="ic"><i class="ti ti-check"></i></div><h2>${title}</h2><p class="desc" style="margin-top:8px">${msg}</p><button class="btn primary" style="width:100%;justify-content:center;margin-top:6px" onclick="closeModal()">Gata</button></div>`;
+}
+function openModal(){document.getElementById('overlay').classList.add('open');}
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSide();}});
+function toggleSide(){document.querySelector('.side').classList.toggle('open');document.getElementById('scrim').classList.toggle('on');}
+function closeSide(){document.querySelector('.side').classList.remove('open');document.getElementById('scrim').classList.remove('on');}
+
+go('home');
+</script>
+</body>
+</html>
