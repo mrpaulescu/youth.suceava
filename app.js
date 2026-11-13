@@ -32,11 +32,22 @@ const isReg=id=>store.reg.includes(id);
 const isSavedF=id=>store.savedF.includes(id);
 async function requireAuth(){
   const {data}=await supabaseClient.auth.getSession();
-  if(!data.session){ alert('Trebuie să fii autentificat pentru această acțiune.'); return null; }
+  if(!data.session){ window.YSAuth?.open('login','Autentifică-te pentru a folosi această funcție.'); return null; }
   return data.session.user;
 }
-async function registerEvent(id){const user=await requireAuth();if(!user)return; const name=(document.getElementById('reg-name')?.value||'').trim(); const email=(document.getElementById('reg-email')?.value||user.email||'').trim(); const {error}=await supabaseClient.from('event_registrations').upsert({event_id:id,user_id:user.id,status:'registered',full_name:name||null,email:email||null},{onConflict:'event_id,user_id'});if(error) return alert(error.message); await loadUserState(); refresh(); return true;}
-async function unregisterEvent(id){const user=await requireAuth();if(!user)return; const {error}=await supabaseClient.from('event_registrations').delete().eq('event_id',id).eq('user_id',user.id);if(error)return alert(error.message);await loadUserState();refresh();}
+const viewer=()=>window.YSAuth?.identity?.()||{name:'Vizitator',initials:'V',role:'membru',email:''};
+async function registerEvent(id){
+  const user=window.YSAuth?.getUser?.()||null;
+  const name=(document.getElementById('reg-name')?.value||'').trim();
+  const email=(document.getElementById('reg-email')?.value||user?.email||'').trim();
+  if(!name||!email){const err=document.getElementById('reg-error');if(err)err.textContent='Completează numele și adresa de email pentru confirmarea înscrierii.';return false;}
+  const payload={event_id:id,user_id:user?.id||null,status:'registered',full_name:name,email};
+  const {error}=await supabaseClient.from('event_registrations').insert(payload);
+  if(error){const err=document.getElementById('reg-error');if(err)err.textContent=error.message.includes('locuri disponibile')?'Nu mai sunt locuri disponibile.':error.message.includes('duplicate')?'Există deja o înscriere cu această adresă de email.': 'Nu am putut salva înscrierea. Verifică datele și încearcă din nou.';return false;}
+  if(user)await loadUserState();
+  refresh();return true;
+}
+async function unregisterEvent(id){const user=await requireAuth();if(!user)return; const {error}=await supabaseClient.from('event_registrations').delete().eq('event_id',id).eq('user_id',user.id);if(error){window.YSForms?.toast('Nu am putut anula înscrierea.');return;}await loadUserState();refresh();}
 async function saveF(id){const user=await requireAuth();if(!user)return; const {error}=await supabaseClient.from('saved_funding').upsert({funding_id:id,user_id:user.id},{onConflict:'user_id,funding_id'});if(error)return alert(error.message);await loadUserState();refresh();}
 async function toggleSavedF(id){const user=await requireAuth();if(!user)return;if(isSavedF(id)){await supabaseClient.from('saved_funding').delete().eq('funding_id',id).eq('user_id',user.id);}else{await supabaseClient.from('saved_funding').upsert({funding_id:id,user_id:user.id},{onConflict:'user_id,funding_id'});}await loadUserState();refresh();}
 async function refresh(){if(current==='events')renderEvents();if(current==='home')renderHome();if(current==='funding')renderFunding();if(current==='feed')renderFeed();}
@@ -113,7 +124,7 @@ const FEED_FILTERS=[['all','Toate'],['following','Urmăresc'],['consult','Consul
 function setFeedFilter(k){feedFilter=k;renderFeed();}
 const allPosts=()=>store.myPosts.concat(POSTS);
 function postAuthor(a){
-  if(a.k==='me')return{n:'Paul Grosu',i:'PG',sub:'voluntar · Suceava',bg:ROLE.vol[2],col:ROLE.vol[1],role:ROLE.vol[0],tag:'vol',click:''};
+  if(a.k==='me'){const u=viewer();return{n:u.name,i:u.initials,sub:u.role+' · comunitate',bg:ROLE.vol[2],col:ROLE.vol[1],role:u.role,tag:'vol',click:''};}
   if(a.k==='p'){const p=PEOPLE.find(x=>x.id===a.id),ng=ngoById(p.ngo),r=ROLE[p.tag];
     return{n:p.n,i:p.i,sub:`${p.role} · ${ng.name}`,bg:r[2],col:r[1],role:r[0],tag:p.tag,click:`openPerson('${p.id}')`};}
   const n=ngoById(a.id),c=CAT[n.cat];
@@ -132,7 +143,7 @@ function attachCard(at){
 function postCard(p){
   const au=postAuthor(p.a),ty=PTYPE[p.type]||PTYPE.update;
   const liked=store.likes.includes(p.id);
-  const myC=(store.myCmts[p.id]||[]).map(c=>({n:'Paul Grosu',i:'PG',tag:'vol',time:c.time,text:c.text,raw:true}));
+  const myC=(store.myCmts[p.id]||[]).map(c=>({n:viewer().name,i:viewer().initials,tag:'vol',time:c.time,text:c.text,raw:true}));
   const cmts=(p.cmts||[]).concat(myC);
   const likeN=p.likes+(liked?1:0);
   let headBtn='';
@@ -142,7 +153,7 @@ function postCard(p){
       :`<button class="followb" onclick="toggleFollow('${fk}','${au.n}')">+ Urmărește</button>`;}
   const cHtml=openCmts.has(p.id)?`<div class="comments">${cmts.map(c=>{const r=ROLE[c.tag];
       return `<div class="cmt"><div class="pav" style="background:${r[2]};color:${r[1]}">${c.i}</div><div class="bubble"><b>${c.n}</b><span class="rb2" style="background:${r[2]};color:${r[1]}">${r[0]}</span><span class="ct">${c.time}</span><div>${c.raw?esc(c.text):c.text}</div></div></div>`;}).join('')}
-    <div class="cmt-in"><div class="pav" style="background:var(--coral-bg);color:var(--coral);width:30px;height:30px;font-size:11px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0">PG</div><input id="cin-${p.id}" placeholder="Scrie un comentariu…" onkeydown="if(event.key==='Enter')addCmt('${p.id}')"><button class="btn primary sm" onclick="addCmt('${p.id}')" aria-label="Trimite comentariul"><i class="ti ti-send"></i></button></div></div>`:'';
+    <div class="cmt-in"><div class="pav" style="background:var(--coral-bg);color:var(--coral);width:30px;height:30px;font-size:11px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0">${viewer().initials}</div><input id="cin-${p.id}" placeholder="Scrie un comentariu…" onkeydown="if(event.key==='Enter')addCmt('${p.id}')"><button class="btn primary sm" onclick="addCmt('${p.id}')" aria-label="Trimite comentariul"><i class="ti ti-send"></i></button></div></div>`:'';
   return `<div class="post ${p.type==='consult'?'consult':''}">
     <div class="phead"><div class="pav" style="background:${au.bg};color:${au.col}" onclick="${au.click}">${au.i}</div>
       <div class="who"><h3 onclick="${au.click}">${au.n}</h3><span class="rb2" style="background:${au.bg};color:${au.col}">${au.role}</span>
@@ -172,7 +183,7 @@ function renderFeed(){
     if(feedFilter==='vol')return au.tag==='vol'||au.tag==='youth';
     return true;});
   const list=items.length?items.map(postCard).join(''):`<div class="empty">${feedFilter==='following'?'Nu urmărești încă pe nimeni. Apasă „Urmărește” pe o organizație sau o persoană și postările lor apar aici.':'Nicio postare nu se potrivește.'}</div>`;
-  document.getElementById('feed-list').innerHTML=`<div class="composer" onclick="openComposer()"><div class="avatar">PG</div><div class="fake">La ce lucrezi, Paul? Împărtășește cu comunitatea…</div><i class="ti ti-pencil-plus" style="color:var(--text-3);font-size:20px"></i></div>${list}`;
+  document.getElementById('feed-list').innerHTML=`<div class="composer" onclick="openComposer()"><div class="avatar">${viewer().initials}</div><div class="fake">Împărtășește o inițiativă cu comunitatea…</div><i class="ti ti-pencil-plus" style="color:var(--text-3);font-size:20px"></i></div>${list}`;
   document.getElementById('feed-aside').innerHTML=feedAsideHtml();
 }
 function feedAsideHtml(){
@@ -198,24 +209,33 @@ async function likePost(id){
   await loadUserState();renderFeed();
 }
 function toggleCmtsF(id){if(openCmts.has(id))openCmts.delete(id);else openCmts.add(id);renderFeed();if(openCmts.has(id)){const el=document.getElementById('cin-'+id);if(el)el.focus();}}
-function addCmt(id){
+async function addCmt(id){
   const el=document.getElementById('cin-'+id);if(!el)return;
   const txt=el.value.trim();if(!txt)return;
-  (store.myCmts[id]=store.myCmts[id]||[]).push({text:txt,time:'acum'});
-  openCmts.add(id);
-  const p=allPosts().find(x=>x.id===id);
-  if(p&&p.type==='consult')addNotif('ti-gavel','purple','Comentariul tău a fost înregistrat în <b>consultarea publică</b>. Vei primi sinteza finală.');
-  renderFeed();
+  if(!(await requireAuth()))return;
+  const {error}=await supabaseClient.from('comments').insert({post_id:id,body:txt});
+  if(error){window.YSForms?.toast('Comentariul nu a putut fi trimis.');return;}
+  await loadPublicData();await loadUserState();openCmts.add(id);renderFeed();
 }
-function delPost(id){store.myPosts=store.myPosts.filter(p=>p.id!==id);delete store.myCmts[id];renderFeed();}
-function sharePost(id){done('Gata de distribuit','Am copiat linkul postării (demo). Îl poți trimite pe WhatsApp, email sau în grupul de voluntari.');openModal();}
-function openComposer(){
+async function delPost(id){
+  if(!(await requireAuth()))return;
+  const {error}=await supabaseClient.from('posts').delete().eq('id',id);
+  if(error){window.YSForms?.toast('Postarea nu a putut fi ștearsă.');return;}
+  await loadPublicData();await loadUserState();renderFeed();
+}
+async function sharePost(id){
+  const url=new URL(window.location.href);url.hash='post-'+encodeURIComponent(id);
+  try{if(navigator.share)await navigator.share({title:'Bine Comun',url:url.toString()});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url.toString());window.YSForms?.toast('Linkul a fost copiat.');}else window.YSForms?.toast(url.toString());}
+  catch(error){if(error.name!=='AbortError')window.YSForms?.toast('Nu am putut distribui linkul.');}
+}
+async function openComposer(){
+  if(!(await requireAuth()))return;
   const evO=EVENTS.map(e=>`<option value="ev:${e.id}">Eveniment: ${e.title}</option>`).join('');
   const cO=COLLABS.map(c=>`<option value="col:${c.id}">Colaborare: ${c.title}</option>`).join('');
   const fO=FUND.map(f=>`<option value="fund:${f.id}">Finanțare: ${f.title}</option>`).join('');
   document.getElementById('modal-content').innerHTML=`
     <h2>Postare nouă</h2>
-    <div class="org" style="margin:6px 0 12px"><div class="avatar" style="width:28px;height:28px;font-size:11px">PG</div> Paul Grosu · postezi ca <b>voluntar</b></div>
+    <div class="org" style="margin:6px 0 12px"><div class="avatar" style="width:28px;height:28px;font-size:11px">${viewer().initials}</div> ${esc(viewer().name)} · postezi ca <b>${esc(viewer().role)}</b></div>
     <div class="field"><textarea id="c-text" placeholder="Ce vrei să afle comunitatea? Un update, o întrebare, un anunț…" style="min-height:110px"></textarea></div>
     <div class="field"><label>Tip postare</label><select id="c-type"><option value="update">Actualizare</option><option value="anunt">Anunț</option><option value="intrebare">Întrebare</option><option value="realizare">Reușită</option></select></div>
     <div class="field"><label>Atașează (opțional)</label><select id="c-attach"><option value="">Fără atașament</option><optgroup label="Evenimente">${evO}</optgroup><optgroup label="Colaborări">${cO}</optgroup><optgroup label="Finanțări">${fO}</optgroup></select></div>
@@ -223,19 +243,18 @@ function openComposer(){
   openModal();
   document.getElementById('c-text').focus();
 }
-function publishPost(){
+async function publishPost(){
   const el=document.getElementById('c-text');
   const txt=el.value.trim();
   if(!txt){el.focus();return;}
   const type=document.getElementById('c-type').value;
   const atv=document.getElementById('c-attach').value;
-  let attach=null;
-  if(atv){const parts=atv.split(':');attach={k:parts[0],id:+parts[1]};}
-  store.myPosts.unshift({id:'u'+Date.now(),a:{k:'me'},type,time:'acum',text:txt,attach,likes:0,cmts:[]});
-  
-  addNotif('ti-send','info','Postarea ta a fost publicată în flux.');
-  done('Publicat!','Postarea ta e acum vizibilă în fluxul comunității din Bucovina.');
-  if(current==='feed')renderFeed();
+  const extra={type,body:txt};
+  if(atv){const parts=atv.split(':');if(parts[0]==='ev')extra.event_id=parts[1];if(parts[0]==='col')extra.collaboration_id=parts[1];if(parts[0]==='fund')extra.funding_id=parts[1];}
+  const {error}=await Feed.create(txt,extra);
+  if(error){window.YSForms?.toast(error);return;}
+  closeModal();await loadPublicData();await loadUserState();if(current==='feed')renderFeed();
+  window.YSForms?.toast('Postarea a fost publicată.');
 }
 
 
@@ -345,17 +364,19 @@ async function initApp(){
   }
 }
 
-supabaseClient.auth.onAuthStateChange(async ()=>{
+window.addEventListener('ys:auth-changed',async()=>{
   await loadUserState();
   if(current==='home')renderHome();
   if(current==='feed')renderFeed();
+  if(current==='events')renderEvents();
+  go(current);
   updateBell();
 });
 
 /* ROUTER */
 let current='events',evFilter='all',mapFilter='all',colFilter='all';
 const TB={
-  home:['Bună, Paul','Ce se întâmplă azi în societatea civilă suceveană','Acțiune rapidă','ti-bolt'],
+  home:['Bine ai venit','Ce se întâmplă azi în societatea civilă suceveană','Explorează evenimentele','ti-calendar-event'],
   events:['Hub evenimente','Tot ce se întâmplă în ecosistemul civic din Suceava','Propune eveniment','ti-plus'],
   map:['Harta ONG-urilor din Suceava','Explorează organizațiile și oamenii din spatele lor','Înregistrează ONG','ti-plus'],
   collabs:['Colaborări & nevoi','Cereri și oferte din ecosistemul civic sucevean','Postează o colaborare','ti-plus'],
@@ -371,7 +392,8 @@ function go(v){
   document.getElementById('view-'+v).classList.add('on');
   document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.nav===v));
   const [t,s,c,ic]=TB[v]||TB.events;
-  document.getElementById('tb-title').innerHTML=`<h1>${t}</h1>${s?`<div class="sub">${s}</div>`:''}`;
+  const heading=v==='home'&&window.YSAuth?.getUser?.()?('Bună, '+viewer().name.split(' ')[0]):t;
+  document.getElementById('tb-title').innerHTML=`<h1>${esc(heading)}</h1>${s?`<div class="sub">${s}</div>`:''}`;
   document.getElementById('tb-cta').innerHTML=`<i class="ti ${ic}"></i> ${c}`;
   document.getElementById('q').value='';
   if(v==='home')renderHome();
@@ -609,17 +631,19 @@ function openNgo(id){
 
 /* MODALS */
 function openReg(id){
-  const e=EVENTS.find(x=>x.id===id),c=CAT[e.cat],ng=ngoById(e.ngo);
+  const e=EVENTS.find(x=>x.id===id);if(!e)return;
+  const c=CAT[e.cat]||CAT.soc,ng=ngoById(e.ngo)||{name:'Comunitatea locală',oi:'BC'};
   document.getElementById('modal-content').innerHTML=`
     <div class="tags" style="margin-bottom:10px"><span class="tag ${c.cls}">${c.label}</span>${e.online?'<span class="tag t-on">Online</span>':''}</div>
     <h2>${e.title}</h2>
     <div class="org"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> Organizat de ${ng.name}</div>
-    <div class="mmeta"><span><i class="ti ti-calendar"></i> ${e.d} ${e.m==='iun'?'iunie':'iulie'} 2026, ${e.day}</span><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span><span><i class="ti ti-users"></i> ${e.cap-e.spots} din ${e.cap} locuri</span></div>
+    <div class="mmeta"><span><i class="ti ti-calendar"></i> ${new Date(e.starts_at).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric',weekday:'long'})}</span><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span><span><i class="ti ti-users"></i> ${e.cap-e.spots} din ${e.cap} locuri</span></div>
     <p class="desc">${e.desc}</p>
-    <div class="field" style="margin-top:14px"><label>Nume complet</label><input id="reg-name" placeholder="Numele tău"></div>
-    <div class="field"><label>Email</label><input id="reg-email" type="email" placeholder="email@exemplu.ro"></div>
-    <div class="field"><label>Particip ca</label><select><option>Voluntar individual</option><option>Reprezentant ONG</option><option>Tânăr / elev / student</option></select></div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="registerEvent('${e.id}').then(ok=>{if(ok)closeModal()})">Confirmă înscrierea</button></div>`;
+    <div class="registration-note">Te poți înscrie fără cont. Dacă ești autentificat, înscrierea va apărea și în contul tău.</div>
+    <div class="field" style="margin-top:14px"><label for="reg-name">Nume complet</label><input id="reg-name" autocomplete="name" required maxlength="160" placeholder="Numele tău" value="${esc(viewer().name==='Vizitator'?'':viewer().name)}"></div>
+    <div class="field"><label for="reg-email">Email pentru confirmare</label><input id="reg-email" type="email" autocomplete="email" required placeholder="email@exemplu.ro" value="${esc(viewer().email||'')}"></div>
+    <p id="reg-error" class="auth-error" role="alert"></p>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="registerEvent('${e.id}').then(ok=>{if(ok){done('Înscriere confirmată','Ai fost înscris la eveniment.');}})">Confirmă înscrierea</button></div>`;
   openModal();
 }
 function openRespond(id){
