@@ -272,7 +272,7 @@ async function loadPublicData(){
       dbSelect('ngos',q=>q.eq('status','published').order('name')),
       dbSelect('people',q=>q.order('name')),
       dbSelect('projects',q=>q.order('created_at',{ascending:false})),
-      dbSelect('events',q=>q.eq('status','published').order('start_at')),
+      dbSelect('events',q=>q.eq('status','published').order('starts_at')),
       dbSelect('collaborations',q=>q.eq('status','open').order('created_at',{ascending:false})),
       dbSelect('funding_opportunities',q=>q.in('status',['open','soon']).order('deadline_at')),
       dbSelect('resources',q=>q.eq('status','published').order('created_at',{ascending:false})),
@@ -290,9 +290,9 @@ async function loadPublicData(){
     })));
 
     EVENTS.splice(0,EVENTS.length,...ev.map(eventView));
-    COLLABS.splice(0,COLLABS.length,...co.map(c=>({...c,id:c.id,ngo:c.ngo_id,cat:c.category,loc:c.location||'Suceava',deadline:c.deadline||'fără termen',desc:c.description||''})));
-    FUND.splice(0,FUND.length,...fu.map(f=>({...f,id:f.id,amount:f.amount||'',deadline:f.deadline||'',cats:f.categories||[],desc:f.description||''})));
-    RES.splice(0,RES.length,...re.map(r=>({...r,id:r.id,cat:r.category,fmt:r.format||'',desc:r.description||''})));
+    COLLABS.splice(0,COLLABS.length,...co.map(c=>({...c,id:c.id,ngo:c.ngo_id,cat:c.category,type:c.type==='volunteer'?'vol':c.type==='funding'?'fund':c.type,loc:c.location||'Suceava',deadline:c.deadline||'fără termen',desc:c.description||''})));
+    FUND.splice(0,FUND.length,...fu.map(f=>({...f,id:f.id,amount:f.amount_text||'',deadline:f.deadline||'',cats:f.categories||[],desc:f.description||''})));
+    RES.splice(0,RES.length,...re.map(r=>({...r,id:r.id,cat:r.category,fmt:r.type||'',desc:r.description||''})));
 
     PEOPLE.splice(0,PEOPLE.length,...pe.map(p=>({
       ...p,id:p.id,n:p.name,i:p.initials||p.name.slice(0,2).toUpperCase(),role:p.role||'',tag:p.role_type||'youth',ngo:p.ngo_id,email:p.email||'',bio:p.bio||''
