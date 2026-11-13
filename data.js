@@ -1,5 +1,6 @@
 // Strat de acces la date — Youth Suceava
-// Presupune că supabase.js exportă/definește clientul `supabase` global (ajustează importul dacă e altfel).
+// Alias compatibil cu supabase.js din repository și cu testele jsdom.
+const supabase = window.supabaseClient || window.supabase;
 // Toate funcțiile returnează { data, error } normalizat; UI-ul arată succes DOAR când error === null.
 
 async function run(promise) {
@@ -15,7 +16,7 @@ async function run(promise) {
 
 function humanize(err) {
   if (err.code === '23505') return 'Această acțiune a fost deja efectuată.';
-  if (err.code === '42501' || /row-level security/i.test(err.message)) return 'Nu ai permisiunea pentru această acțiune.';
+  if (err.code === '42501' || /row-level security/i.test(err.message || '')) return 'Nu ai permisiunea pentru această acțiune.';
   if (err.code === '23514') return 'Datele introduse nu sunt valide.';
   return 'A apărut o eroare. Încearcă din nou.';
 }
@@ -40,7 +41,7 @@ const Feed = {
     .eq('post_id', postId).eq('status', 'published').order('created_at')),
   addComment: (postId, body) => run(supabase.from('comments').insert({ post_id: postId, body: body.trim() }).select().single()),
   like: (postId) => run(supabase.from('post_likes').insert({ post_id: postId })),
-  unlike: async (postId) => { const u = await currentUser(); return run(supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', u.id)); },
+  unlike: async (postId) => { const u = await currentUser(); if (!u) return { data: null, error: 'Trebuie să fii autentificat.' }; return run(supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', u.id)); },
 };
 
 // ---------- Colaborări ----------
@@ -55,7 +56,7 @@ const Collabs = {
 const Events = {
   create: (e) => run(supabase.from('events').insert({ ...e, status: 'pending_review' }).select().single()),
   register: (eventId, fullName, email) => run(supabase.from('event_registrations').insert({ event_id: eventId, full_name: fullName, email })),
-  unregister: async (eventId) => { const u = await currentUser(); return run(supabase.from('event_registrations').delete().eq('event_id', eventId).eq('user_id', u.id)); },
+  unregister: async (eventId) => { const u = await currentUser(); if (!u) return { data: null, error: 'Trebuie să fii autentificat.' }; return run(supabase.from('event_registrations').delete().eq('event_id', eventId).eq('user_id', u.id)); },
 };
 
 // ---------- Organizații ----------
