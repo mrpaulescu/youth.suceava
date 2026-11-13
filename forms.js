@@ -4,8 +4,8 @@
 
 (function () {
   const OPT = {
-    ngoCat: ['Social', 'Educație', 'Mediu', 'Cultură', 'Tineret', 'Sănătate', 'Altele'],
-    eventCat: ['Workshop', 'Conferință', 'Voluntariat', 'Cultural', 'Networking', 'Altele'],
+    ngoCat: [['soc','Social'],['edu','Educație'],['env','Mediu'],['civ','Drepturi civice']],
+    eventCat: [['edu','Educație'],['env','Mediu'],['soc','Social'],['civ','Drepturi civice']],
     collabType: [['partner', 'Caut parteneri'], ['volunteer', 'Caut voluntari'], ['offer', 'Ofer ajutor'], ['funding', 'Finanțare']],
     resType: ['Ghid', 'Șablon', 'Webinar', 'Dataset'],
   };
