@@ -31,14 +31,16 @@
       fields: [
         { n: 'title', l: 'Titlu', req: 1, max: 200 },
         { n: 'description', l: 'Descriere', t: 'textarea', max: 3000 },
-        { n: 'category', l: 'Categorie', t: 'select', o: OPT.eventCat },
-        { n: 'starts_at', l: 'Începe', t: 'datetime-local', req: 1 },
-        { n: 'ends_at', l: 'Se termină', t: 'datetime-local' },
+        { n: 'category', l: 'Categorie', t: 'select', o: OPT.eventCat, req: 1 },
+        { n: 'starts_at', l: 'Data și ora începerii', t: 'datetime-local', req: 1, hint: 'Alege data și ora locală a evenimentului.' },
+        { n: 'ends_at', l: 'Data și ora încheierii', t: 'datetime-local' },
         { n: 'is_online', l: 'Eveniment online', t: 'checkbox' },
-        { n: 'venue', l: 'Locație' }, { n: 'city', l: 'Oraș' },
-        { n: 'capacity', l: 'Capacitate', t: 'number', min: 1 },
+        { n: 'venue', l: 'Locație / link de participare', max: 240 },
+        { n: 'city', l: 'Localitate', max: 120 },
+        { n: 'capacity', l: 'Număr maxim de participanți', t: 'number', min: 1 },
+        { n: 'ngo_id', l: 'Organizator (opțional)', t: 'select', o: [], hint: 'Alege organizația pe care o reprezinți sau lasă necompletat pentru un eveniment independent.' },
       ],
-      validate: (v) => v.ends_at && v.ends_at < v.starts_at ? 'Data de final trebuie să fie după început.' : null,
+      validate: (v) => v.ends_at && v.ends_at < v.starts_at ? 'Data de final trebuie să fie după început.' : (!v.is_online && !v.venue ? 'Adaugă o locație pentru evenimentul fizic.' : (!v.is_online && !v.city ? 'Adaugă localitatea evenimentului.' : null)),
     },
     collab: {
       table: 'collaborations',
@@ -57,6 +59,7 @@
       title: 'Adaugă un proiect', submit: (v) => run(supabase.from('projects').insert({ ...v, status: 'pending_review' }).select().single()),
       fields: [
         { n: 'title', l: 'Titlu proiect', req: 1, max: 200 },
+        { n: 'ngo_id', l: 'Organizație responsabilă', t: 'select', o: [], req: 1 },
         { n: 'description', l: 'Descriere', t: 'textarea', max: 3000 },
         { n: 'lifecycle', l: 'Stare', t: 'select', o: [['planned', 'Planificat'], ['active', 'Activ'], ['completed', 'Finalizat'], ['cancelled', 'Anulat']], req: 1 },
         { n: 'starts_on', l: 'Data început', t: 'date' },
@@ -69,6 +72,7 @@
       title: 'Profil public de persoană', submit: (v) => run(supabase.from('people').insert({ ...v, status: 'pending_review' }).select().single()),
       fields: [
         { n: 'name', l: 'Nume', req: 1, max: 160 },
+        { n: 'ngo_id', l: 'Organizație (opțional)', t: 'select', o: [] },
         { n: 'role', l: 'Rol / activitate' },
         { n: 'bio', l: 'Biografie', t: 'textarea', max: 2000 },
         { n: 'city', l: 'Oraș' },
@@ -133,14 +137,15 @@
   function fieldHtml(f) {
     const id = 'ysf_' + f.n, req = f.req ? ' required' : '';
     const lab = `<label for="${id}">${esc(f.l)}${f.req ? ' *' : ''}</label>`;
-    if (f.t === 'checkbox') return `<div class="ys-f ck"><input type="checkbox" id="${id}" name="${f.n}"><label for="${id}">${esc(f.l)}</label></div>`;
+    const hint = f.hint ? `<small class="field-hint">${esc(f.hint)}</small>` : '';
+    if (f.t === 'checkbox') return `<div class="ys-f ck"><input type="checkbox" id="${id}" name="${f.n}"><label for="${id}">${esc(f.l)}</label>${hint}</div>`;
     let input;
     if (f.t === 'textarea') input = `<textarea id="${id}" name="${f.n}" rows="4"${f.max ? ` maxlength="${f.max}"` : ''}${req}></textarea>`;
     else if (f.t === 'select') {
       const opts = f.o.map((o) => Array.isArray(o) ? `<option value="${esc(o[0])}">${esc(o[1])}</option>` : `<option value="${esc(o)}">${esc(o)}</option>`).join('');
       input = `<select id="${id}" name="${f.n}"${req}><option value="">— alege —</option>${opts}</select>`;
     } else input = `<input id="${id}" name="${f.n}" type="${f.t || 'text'}"${f.max ? ` maxlength="${f.max}"` : ''}${f.min != null ? ` min="${f.min}"` : ''}${req}>`;
-    return `<div class="ys-f">${lab}${input}</div>`;
+    return `<div class="ys-f">${lab}${input}${hint}</div>`;
   }
 
   // ---------- citire + normalizare valori ----------
@@ -171,7 +176,13 @@
   // ---------- formular generic ----------
   async function openForm(kind, extra = {}, record = null) {
     const cfg = FORMS[kind]; if (!cfg) return;
-    if (!(await needAuth())) return;
+    const user = await needAuth(); if (!user) return;
+    if (cfg.fields.some(field => field.n === 'ngo_id')) {
+      const { data: orgs } = await supabase.from('ngos').select('id,name').order('name');
+      const field = cfg.fields.find(field => field.n === 'ngo_id');
+      field.o = (orgs || []).map(org => [org.id, org.name]);
+      if (!field.req) field.o.unshift(['', 'Fără organizație']);
+    }
     const m = modal(`<h2>${esc(cfg.title)}</h2>
       <form novalidate>${cfg.fields.map(fieldHtml).join('')}
         <div class="ys-err" role="alert"></div>
