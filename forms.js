@@ -7,7 +7,7 @@
     ngoCat: [['soc','Social'],['edu','Educație'],['env','Mediu'],['civ','Drepturi civice']],
     eventCat: [['edu','Educație'],['env','Mediu'],['soc','Social'],['civ','Drepturi civice']],
     collabType: [['partner', 'Caut parteneri'], ['volunteer', 'Caut voluntari'], ['offer', 'Ofer ajutor'], ['funding', 'Finanțare']],
-    resType: ['Ghid', 'Șablon', 'Webinar', 'Dataset'],
+    resType: [['ghid','Ghid'],['sablon','Șablon'],['webinar','Webinar'],['date','Set de date']],
   };
 
   const FORMS = {
