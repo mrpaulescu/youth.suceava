@@ -31,13 +31,20 @@ test('fără date demo hard-coded în pagină', async ({ page }) => {
   for (const bad of ['lorem ipsum', 'John Doe', 'Maria Popescu', 'example.com']) expect(html.toLowerCase()).not.toContain(bad.toLowerCase());
 });
 
-test('acțiune protejată cere autentificare (fără succes fals)', async ({ page }) => {
+test('contul este opțional și formularul de înregistrare explică acest lucru', async ({ page }) => {
   await page.goto('/');
-  // Dacă există un buton de like/înscriere vizibil, anonimul nu trebuie să vadă un mesaj de succes.
-  const btn = page.getByRole('button', { name: /înscrie|înscriere|like|apreciez/i }).first();
-  if (await btn.count()) {
-    await btn.click();
-    await expect(page.getByText(/te-ai înscris|înscriere confirmată/i)).toHaveCount(0);
+  await page.getByRole('button', { name: /intră \/ creează cont/i }).click();
+  await expect(page.getByRole('heading', { name: 'Creează-ți un cont' })).toBeVisible();
+  await expect(page.getByText(/contul este opțional/i)).toBeVisible();
+});
+
+test('înscrierea la eveniment cere date de contact, fără cont', async ({ page }) => {
+  await page.goto('/');
+  const eventButton = page.getByRole('button', { name: /înscrie-te/i }).first();
+  if (await eventButton.count()) {
+    await eventButton.click();
+    await page.getByRole('button', { name: /confirmă înscrierea/i }).click();
+    await expect(page.getByText(/completează numele și adresa de email/i)).toBeVisible();
   }
 });
 
