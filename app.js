@@ -35,7 +35,7 @@ async function requireAuth(){
   if(!data.session){ alert('Trebuie să fii autentificat pentru această acțiune.'); return null; }
   return data.session.user;
 }
-async function registerEvent(id){const user=await requireAuth();if(!user)return; const name=(document.getElementById('reg-name')?.value||'').trim(); const email=(document.getElementById('reg-email')?.value||user.email||'').trim(); const {error}=await supabaseClient.from('event_registrations').upsert({event_id:id,user_id:user.id,status:'registered',full_name:name||null,email:email||null},{onConflict:'event_id,user_id'});if(error) return alert(error.message); await loadUserState(); refresh();}
+async function registerEvent(id){const user=await requireAuth();if(!user)return; const name=(document.getElementById('reg-name')?.value||'').trim(); const email=(document.getElementById('reg-email')?.value||user.email||'').trim(); const {error}=await supabaseClient.from('event_registrations').upsert({event_id:id,user_id:user.id,status:'registered',full_name:name||null,email:email||null},{onConflict:'event_id,user_id'});if(error) return alert(error.message); await loadUserState(); refresh(); return true;}
 async function unregisterEvent(id){const user=await requireAuth();if(!user)return; const {error}=await supabaseClient.from('event_registrations').delete().eq('event_id',id).eq('user_id',user.id);if(error)return alert(error.message);await loadUserState();refresh();}
 async function saveF(id){const user=await requireAuth();if(!user)return; const {error}=await supabaseClient.from('saved_funding').upsert({funding_id:id,user_id:user.id},{onConflict:'user_id,funding_id'});if(error)return alert(error.message);await loadUserState();refresh();}
 async function toggleSavedF(id){const user=await requireAuth();if(!user)return;if(isSavedF(id)){await supabaseClient.from('saved_funding').delete().eq('funding_id',id).eq('user_id',user.id);}else{await supabaseClient.from('saved_funding').upsert({funding_id:id,user_id:user.id},{onConflict:'user_id,funding_id'});}await loadUserState();refresh();}
@@ -253,7 +253,7 @@ async function dbSelect(table, queryFn){
 }
 
 function eventView(e){
-  const d=new Date(e.start_at);
+  const d=new Date(e.starts_at);
   const months=['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'];
   const days=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'];
   const time=e.end_at
@@ -284,7 +284,7 @@ async function loadPublicData(){
       ...n,id:n.id,name:n.name,cat:n.category,city:n.city,x:n.map_x??50,y:n.map_y??50,
       founded:n.founded_year||'',members:n.member_count||0,oi:n.initials||n.name.slice(0,2).toUpperCase(),
       tagline:n.tagline||n.description||'',web:n.website||'',email:n.email||'',phone:n.phone||'',
-      people:pe.filter(p=>p.ngo_id===n.id).map(p=>({n:p.name,r:p.role_title||'',i:p.initials||p.name.slice(0,2).toUpperCase(),t:p.role_type||'youth'})),
+      people:pe.filter(p=>p.ngo_id===n.id).map(p=>({n:p.name,r:p.role||'',i:p.initials||p.name.slice(0,2).toUpperCase(),t:p.role_type||'youth'})),
       projects:pr.filter(p=>p.ngo_id===n.id).map(p=>({t:p.title,s:p.status==='active'?'active':p.status==='completed'?'done':'plan',m:p.status_text||''})),
       events:ev.filter(e=>e.ngo_id===n.id).map(e=>e.id)
     })));
@@ -295,11 +295,11 @@ async function loadPublicData(){
     RES.splice(0,RES.length,...re.map(r=>({...r,id:r.id,cat:r.category,fmt:r.format||'',desc:r.description||''})));
 
     PEOPLE.splice(0,PEOPLE.length,...pe.map(p=>({
-      ...p,id:p.id,n:p.name,i:p.initials||p.name.slice(0,2).toUpperCase(),role:p.role_title||'',tag:p.role_type||'youth',ngo:p.ngo_id,email:p.email||'',bio:p.bio||''
+      ...p,id:p.id,n:p.name,i:p.initials||p.name.slice(0,2).toUpperCase(),role:p.role||'',tag:p.role_type||'youth',ngo:p.ngo_id,email:p.email||'',bio:p.bio||''
     })));
 
     POSTS.splice(0,POSTS.length,...po.map(p=>{
-      const author=p.user_id?{k:'p',id:p.user_id}:p.ngo_id?{k:'n',id:p.ngo_id}:p.person_id?{k:'p',id:p.person_id}:{k:'me'};
+      const author=p.author_id?{k:'p',id:p.author_id}:p.ngo_id?{k:'n',id:p.ngo_id}:p.person_id?{k:'p',id:p.person_id}:{k:'me'};
       const comments=cm.filter(c=>c.post_id===p.id).map(c=>({n:'',i:'',tag:'youth',time:new Date(c.created_at).toLocaleDateString('ro-RO'),text:c.text_content,raw:false}));
       return {id:String(p.id),a:author,type:p.post_type,time:new Date(p.created_at).toLocaleString('ro-RO'),likes:0,attach:p.event_id?{k:'ev',id:p.event_id}:p.collaboration_id?{k:'col',id:p.collaboration_id}:p.funding_id?{k:'fund',id:p.funding_id}:null,text:p.text_content,cmts:comments};
     }));
@@ -327,8 +327,8 @@ async function loadUserState(){
   store.savedF=(s.data||[]).map(x=>x.funding_id);
   store.likes=(l.data||[]).map(x=>String(x.post_id));
   store.follows=(f.data||[]).map(x=>x.ngo_id?`n:${x.ngo_id}`:`p:${x.person_id}`);
-  store.myPosts=(p.data||[]).map(x=>({id:String(x.id),a:{k:'me'},type:x.post_type,time:new Date(x.created_at).toLocaleString('ro-RO'),likes:0,attach:x.event_id?{k:'ev',id:x.event_id}:x.collaboration_id?{k:'col',id:x.collaboration_id}:x.funding_id?{k:'fund',id:x.funding_id}:null,text:x.text_content,cmts:[]}));
-  (c.data||[]).forEach(x=>{(store.myCmts[String(x.post_id)]??=[]).push({text:x.text_content,time:new Date(x.created_at).toLocaleString('ro-RO')});});
+  store.myPosts=(p.data||[]).map(x=>({id:String(x.id),a:{k:'me'},type:x.type,time:new Date(x.created_at).toLocaleString('ro-RO'),likes:0,attach:x.event_id?{k:'ev',id:x.event_id}:x.collaboration_id?{k:'col',id:x.collaboration_id}:x.funding_id?{k:'fund',id:x.funding_id}:null,text:x.body,cmts:[]}));
+  (c.data||[]).forEach(x=>{(store.myCmts[String(x.post_id)]??=[]).push({text:x.body,time:new Date(x.created_at).toLocaleString('ro-RO')});});
   store.notifs=(n.data||[]).map(x=>({i:x.icon||'ti-bell',c:x.color||'info',text:x.message,time:new Date(x.created_at).toLocaleString('ro-RO')}));
 }
 
@@ -450,7 +450,7 @@ function renderEvents(){
   if(!items.length){list.innerHTML='<div class="empty">Niciun eveniment nu se potrivește.</div>';return;}
   let html='',lastM='';
   items.forEach(e=>{
-    if(e.m!==lastM){html+=`<div class="month-label">${new Date(e.start_at||Date.now()).toLocaleDateString('ro-RO',{month:'long',year:'numeric'})}</div>`;lastM=e.m;}
+    if(e.m!==lastM){html+=`<div class="month-label">${new Date(e.starts_at||Date.now()).toLocaleDateString('ro-RO',{month:'long',year:'numeric'})}</div>`;lastM=e.m;}
     const c=CAT[e.cat],ng=ngoById(e.ngo),pct=Math.round(e.spots/e.cap*100),left=e.cap-e.spots;
     html+=`<div class="ev"><div class="date"><div class="d">${e.d}</div><div class="m">${e.m}</div><div class="day">${e.day}</div></div>
       <div class="body"><div class="tags"><span class="tag ${c.cls}">${c.label}</span>${e.online?'<span class="tag t-on">Online</span>':''}</div>
@@ -619,7 +619,7 @@ function openReg(id){
     <div class="field" style="margin-top:14px"><label>Nume complet</label><input id="reg-name" placeholder="Numele tău"></div>
     <div class="field"><label>Email</label><input id="reg-email" type="email" placeholder="email@exemplu.ro"></div>
     <div class="field"><label>Particip ca</label><select><option>Voluntar individual</option><option>Reprezentant ONG</option><option>Tânăr / elev / student</option></select></div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="registerEvent(${e.id});refresh();done('Te-ai înscris!','Ai un loc rezervat la <b>${e.title.replace(/'/g,'’')}</b>. Ți-am trimis confirmarea pe email și am adăugat evenimentul în calendar.')">Confirmă înscrierea</button></div>`;
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="registerEvent('${e.id}').then(ok=>{if(ok)closeModal()})">Confirmă înscrierea</button></div>`;
   openModal();
 }
 function openRespond(id){
@@ -632,7 +632,7 @@ function openRespond(id){
     <p class="desc">${x.desc}</p>
     <div class="field" style="margin-top:14px"><label>Răspund ca</label><select><option>Voluntar individual</option><option>Reprezentant ONG</option><option>Finanțator / sponsor</option><option>Instituție publică</option></select></div>
     <div class="field"><label>Mesaj pentru ${ng.name}</label><textarea placeholder="Spune pe scurt cum poți contribui…">Salut! Aș vrea să mă implic în această colaborare.</textarea></div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="done('Mesaj trimis!','${ng.name} a primit răspunsul tău la <b>${x.title.replace(/'/g,'’')}</b> și te poate contacta direct.')">Trimite răspunsul</button></div>`;
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="window.YSForms.openCollabResponse('${x.id}','${x.title.replace(/'/g,'’')}')">Trimite răspunsul</button></div>`;
   openModal();
 }
 function done(title,msg){
@@ -645,4 +645,20 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeS
 function toggleSide(){document.querySelector('.side').classList.toggle('open');document.getElementById('scrim').classList.toggle('on');}
 function closeSide(){document.querySelector('.side').classList.remove('open');document.getElementById('scrim').classList.remove('on');}
 
+document.addEventListener('data:changed', async () => {
+  try {
+    await loadPublicData(); await loadUserState();
+    if(current==='home')renderHome(); else if(current==='events')renderEvents();
+    else if(current==='map'){renderNgoList();renderPins();} else if(current==='collabs')renderCollabs();
+    else if(current==='people')renderPeople(); else if(current==='funding')renderFunding();
+    else if(current==='resources')renderResources(); else if(current==='feed')renderFeed();
+    updateBell();
+  } catch (e) { console.error('Refresh failed',e); alert('Nu am putut reîncărca datele. Reîncarcă pagina.'); }
+});
+document.getElementById('tb-cta')?.addEventListener('click',()=>{
+  const kind={map:'ngo',events:'event',collabs:'collab',people:'person',resources:'resource'}[current];
+  if(kind) window.YSForms?.openForm(kind);
+  else if(current==='home')go('events');
+  else if(current==='funding')alert('Oportunitățile de finanțare pot fi adăugate de administratori.');
+});
 initApp();
