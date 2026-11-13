@@ -185,7 +185,7 @@ function feedAsideHtml(){
       return `<div class="person"><div class="oa" style="width:36px;height:36px;background:${c.bg};color:${c.color};font-size:12px;border-radius:9px">${n.oi}</div><div class="body"><h3 style="cursor:pointer" onclick="openNgo('${n.id}')">${n.name}</h3><div class="role">ONG · ${n.city}</div></div><button class="btn sm" onclick="toggleFollow('n:${n.id}','${n.name}')">Urmărește</button></div>`;})
   ].join('');
   return `<div class="panel"><h4><i class="ti ti-chart-bar"></i> Comunitatea azi</h4>
-      <div class="stat"><span>Postări săptămâna asta</span><b>${allPosts().length+13}</b></div>
+      <div class="stat"><span>Postări săptămâna asta</span><b>${allPosts().length}</b></div>
       <div class="stat"><span>Consultări publice deschise</span><b>${allPosts().filter(p=>p.type==='consult').length}</b></div>
       <div class="stat"><span>Urmărești</span><b>${store.follows.length}</b></div></div>
     <div class="panel"><h4><i class="ti ti-user-plus"></i> Pe cine să urmărești</h4>${rows||'<div style="font-size:13px;color:var(--text-3)">Urmărești deja toate sugestiile. 🎉</div>'}</div>`;
