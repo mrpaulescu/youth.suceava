@@ -52,7 +52,7 @@ test('succes: insert cu status pending_review, modal închis, eveniment emis', a
   let fired = null; doc.addEventListener('data:changed', (e) => (fired = e.detail));
   await w.YSForms.openForm('ngo');
   const f = doc.querySelector('form');
-  f.elements.name.value = 'ONG Test'; f.elements.category.value = 'Mediu'; f.elements.founded_year.value = '2015';
+  f.elements.name.value = 'ONG Test'; f.elements.category.value = 'env'; f.elements.founded_year.value = '2015';
   f.dispatchEvent(new w.Event('submit', { cancelable: true, bubbles: true }));
   await tick();
   const ins = calls.find((c) => c.op === 'insert');
