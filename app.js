@@ -133,11 +133,11 @@ function postAuthor(a){
 function attachCard(at){
   if(!at)return'';
   if(at.k==='ev'){const e=EVENTS.find(x=>x.id===at.id);if(!e)return'';const c=CAT[e.cat];
-    return `<div class="attach" onclick="openReg(${e.id})"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ti-calendar-event"></i></div><div class="ab"><h3>${e.title}</h3><div class="as">${e.d} ${e.m} · ${e.venue}, ${e.city} · ${e.cap-e.spots} locuri libere</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
+    return `<div class="attach" onclick="openReg('${e.id}')"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ti-calendar-event"></i></div><div class="ab"><h3>${e.title}</h3><div class="as">${e.d} ${e.m} · ${e.venue}, ${e.city} · ${e.cap-e.spots} locuri libere</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
   if(at.k==='col'){const x=COLLABS.find(c=>c.id===at.id);if(!x)return'';const t=CTYPE[x.type],c=CAT[x.cat];
-    return `<div class="attach" onclick="openRespond(${x.id})"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ${t.i}"></i></div><div class="ab"><h3>${x.title}</h3><div class="as">${t.l} · ${x.loc} · termen ${x.deadline}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
+    return `<div class="attach" onclick="openRespond('${x.id}')"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ${t.i}"></i></div><div class="ab"><h3>${x.title}</h3><div class="as">${t.l} · ${x.loc} · termen ${x.deadline}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
   if(at.k==='fund'){const f=FUND.find(x=>x.id===at.id);if(!f)return'';
-    return `<div class="attach" onclick="openFund(${f.id})"><div class="ai" style="background:var(--amber-bg);color:var(--amber)"><i class="ti ti-coin"></i></div><div class="ab"><h3>${f.title}</h3><div class="as">${f.funder} · ${f.amount} · termen ${f.deadline}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
+    return `<div class="attach" onclick="openFund('${f.id}')"><div class="ai" style="background:var(--amber-bg);color:var(--amber)"><i class="ti ti-coin"></i></div><div class="ab"><h3>${f.title}</h3><div class="as">${f.funder} · ${f.amount} · termen ${f.deadline}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
   return'';
 }
 function postCard(p){
@@ -275,13 +275,13 @@ function eventView(e){
   const d=new Date(e.starts_at);
   const months=['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'];
   const days=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'];
-  const time=e.end_at
+  const time=e.ends_at
     ? `${d.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})}–${new Date(e.end_at).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})}`
     : d.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
   return {...e,
     id:e.id,d:d.getDate(),m:months[d.getMonth()],day:days[d.getDay()],
     cat:e.category,online:!!e.is_online,city:e.city||'Suceava',venue:e.venue||'Online',
-    time,ngo:e.ngo_id,spots:0,cap:e.capacity||0,desc:e.description||''
+    time,ngo:e.ngo_id,spots:0,cap:e.capacity??null,desc:e.description||''
   };
 }
 
@@ -413,10 +413,10 @@ function renderHome(){
   const events3=EVENTS.slice(0,3).map(e=>{const c=CAT[e.cat],ng=ngoById(e.ngo);
     return `<div class="row"><div class="datebox"><div class="d">${e.d}</div><div class="m">${e.m}</div></div>
       <div class="rb"><h3>${e.title}</h3><div class="rs"><span class="tag ${c.cls}" style="font-size:10px;padding:1px 7px">${c.label}</span><i class="ti ti-map-pin"></i> ${e.city}</div></div>
-      <button class="btn primary sm" onclick="openReg(${e.id})">Înscrie-te</button></div>`;}).join('');
+      <button class="btn primary sm" onclick="openReg('${e.id}')">Înscrie-te</button></div>`;}).join('');
 
   const urgent=COLLABS.filter(x=>/^\d/.test(x.deadline)).slice(0,4).map(x=>{const t=CTYPE[x.type],c=CAT[x.cat],ng=ngoById(x.ngo);
-    return `<div class="crow" onclick="openRespond(${x.id})"><div class="ci" style="background:${c.bg};color:${c.color}"><i class="ti ${t.i}"></i></div>
+    return `<div class="crow" onclick="openRespond('${x.id}')"><div class="ci" style="background:${c.bg};color:${c.color}"><i class="ti ${t.i}"></i></div>
       <div class="cb"><h3>${x.title}</h3><div class="cs"><i class="ti ti-clock deadline" style="color:var(--coral)"></i> termen ${x.deadline} · ${ng.name}</div></div></div>`;}).join('');
 
   const counts={};NGOS.forEach(n=>counts[n.cat]=(counts[n.cat]||0)+1);
@@ -467,20 +467,20 @@ function setEvFilter(k){evFilter=k;renderEvents();}
 function renderEvents(){
   renderEvFilters();
   const q=(document.getElementById('q').value||'').toLowerCase();
-  const items=EVENTS.filter(e=>{const ng=ngoById(e.ngo);if(q&&!(e.title+ng.name+e.city).toLowerCase().includes(q))return false;if(evFilter==='all')return true;if(evFilter==='online')return e.online;if(evFilter==='onsite')return !e.online;return e.cat===evFilter;});
+  const items=EVENTS.filter(e=>{const ng=ngoById(e.ngo)||{name:'Comunitate locală',oi:'BC'};if(q&&!(e.title+ng.name+e.city).toLowerCase().includes(q))return false;if(evFilter==='all')return true;if(evFilter==='online')return e.online;if(evFilter==='onsite')return !e.online;return e.cat===evFilter;});
   const list=document.getElementById('ev-list');
   if(!items.length){list.innerHTML='<div class="empty">Niciun eveniment nu se potrivește.</div>';return;}
   let html='',lastM='';
   items.forEach(e=>{
     if(e.m!==lastM){html+=`<div class="month-label">${new Date(e.starts_at||Date.now()).toLocaleDateString('ro-RO',{month:'long',year:'numeric'})}</div>`;lastM=e.m;}
-    const c=CAT[e.cat],ng=ngoById(e.ngo),pct=Math.round(e.spots/e.cap*100),left=e.cap-e.spots;
+    const c=CAT[e.cat]||CAT.soc,ng=ngoById(e.ngo)||{name:'Comunitate locală',oi:'BC'},pct=e.cap?Math.round(e.spots/e.cap*100):0,left=e.cap?e.cap-e.spots:null;
     html+=`<div class="ev"><div class="date"><div class="d">${e.d}</div><div class="m">${e.m}</div><div class="day">${e.day}</div></div>
       <div class="body"><div class="tags"><span class="tag ${c.cls}">${c.label}</span>${e.online?'<span class="tag t-on">Online</span>':''}</div>
         <h3>${e.title}</h3>
         <div class="meta"><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span></div>
         <div class="foot"><div class="org link" onclick="openNgo('${ng.id}')"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> ${ng.name}</div>
-          <div class="spots"><div class="bar"><i style="width:${pct}%"></i></div> ${left} locuri</div></div></div>
-      <div style="display:flex;align-items:center">${isReg(e.id)?`<button class="btn sm" style="color:var(--teal);border-color:var(--teal)" onclick="unregisterEvent(${e.id})"><i class="ti ti-check"></i> Înscris</button>`:`<button class="btn primary sm" onclick="openReg(${e.id})">Înscrie-te</button>`}</div></div>`;
+          <div class="spots">${e.cap?`<div class="bar"><i style="width:${pct}%"></i></div> ${left} locuri`:'Înscriere deschisă'}</div></div></div>
+      <div style="display:flex;align-items:center">${isReg(e.id)?`<button class="btn sm" style="color:var(--teal);border-color:var(--teal)" onclick="unregisterEvent('${e.id}')"><i class="ti ti-check"></i> Înscris</button>`:`<button class="btn primary sm" onclick="openReg('${e.id}')">Înscrie-te</button>`}</div></div>`;
   });
   list.innerHTML=html;
 }
@@ -528,7 +528,7 @@ function renderCollabs(){
       <p class="cdesc">${x.desc}</p>
       <div class="cmeta"><span><i class="ti ti-map-pin"></i> ${x.loc}</span><span class="${x.deadline.match(/^\d/)?'deadline':''}"><i class="ti ti-clock"></i> ${x.deadline}</span></div>
       <div class="cfoot"><div class="org link" onclick="openNgo('${ng.id}')"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> ${ng.name}</div>
-        <button class="btn primary sm" onclick="openRespond(${x.id})">Răspunde</button></div></div>`;}).join('');
+        <button class="btn primary sm" onclick="openRespond('${x.id}')">Răspunde</button></div></div>`;}).join('');
 }
 
 /* PEOPLE */
@@ -546,8 +546,8 @@ function renderPeople(){
   document.getElementById('view-people').innerHTML=`<div class="filters">${chips}</div><div class="ppl-grid">${cards}</div>`;
 }
 function openPerson(id){
-  const p=PEOPLE.find(x=>x.id===id),r=ROLE[p.tag],ng=ngoById(p.ngo),c=CAT[ng.cat];
-  const evs=EVENTS.filter(e=>ng.events.includes(e.id)).slice(0,3).map(e=>`<div class="proj"><div class="pt"><h3>${e.title}</h3><div class="pm">${e.d} ${e.m} · ${e.city}</div></div><button class="btn sm" onclick="openReg(${e.id})">Detalii</button></div>`).join('')||'<div class="pm" style="color:var(--text-3);font-size:13px">Nicio acțiune programată momentan.</div>';
+  const p=PEOPLE.find(x=>x.id===id);if(!p)return;const r=ROLE[p.tag]||ROLE.youth,ng=ngoById(p.ngo)||{name:'Comunitate locală',city:p.city||'Suceava',cat:'soc'},c=CAT[ng.cat]||CAT.soc;
+  const evs=EVENTS.filter(e=>ng.events.includes(e.id)).slice(0,3).map(e=>`<div class="proj"><div class="pt"><h3>${e.title}</h3><div class="pm">${e.d} ${e.m} · ${e.city}</div></div><button class="btn sm" onclick="openReg('${e.id}')">Detalii</button></div>`).join('')||'<div class="pm" style="color:var(--text-3);font-size:13px">Nicio acțiune programată momentan.</div>';
   document.getElementById('view-person').innerHTML=`
     <a class="back" onclick="go('people')"><i class="ti ti-arrow-left"></i> Înapoi la oameni</a>
     <div class="ng-head"><div class="big" style="background:${r[2]};color:${r[1]};border-radius:50%">${p.i}</div>
@@ -583,7 +583,7 @@ function renderFunding(){
       <div class="fdl"><i class="ti ti-calendar-due"></i> termen-limită: ${f.deadline}</div>
       <p class="fdesc">${f.desc}</p>
       <div class="fmeta">${tags}</div>
-      <div class="ffoot">${isSavedF(f.id)?`<button class="btn" style="color:var(--info);border-color:var(--info)" onclick="toggleSavedF(${f.id})"><i class="ti ti-bookmark"></i> Salvat</button>`:`<button class="btn" onclick="toggleSavedF(${f.id})"><i class="ti ti-bookmark"></i> Salvează</button>`}<button class="btn primary" onclick="openFund(${f.id})">Aplică</button></div></div>`;}).join(''):'<div class="empty">Nicio finanțare găsită.</div>';
+      <div class="ffoot">${isSavedF(f.id)?`<button class="btn" style="color:var(--info);border-color:var(--info)" onclick="toggleSavedF('${f.id}')"><i class="ti ti-bookmark"></i> Salvat</button>`:`<button class="btn" onclick="toggleSavedF('${f.id}')"><i class="ti ti-bookmark"></i> Salvează</button>`}<button class="btn primary" onclick="openFund('${f.id}')">Aplică</button></div></div>`;}).join(''):'<div class="empty">Nicio finanțare găsită.</div>';
   document.getElementById('view-funding').innerHTML=`<div class="filters">${chips}</div><div class="fund-grid">${cards}</div>`;
 }
 function openFund(id){
@@ -596,7 +596,7 @@ function openFund(id){
     <p class="desc">${f.desc}</p>
     <div class="field" style="margin-top:14px"><label>Aplici în numele</label><select>${NGOS.map(n=>`<option>${n.name}</option>`).join('')}</select></div>
     <div class="field"><label>Sumă solicitată</label><input placeholder="ex. 25.000 lei"></div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="saveF(${f.id});done('Aplicație începută!','Ți-am pregătit dosarul pentru <b>${f.title.replace(/'/g,'’')}</b>. L-am adăugat la finanțările tale urmărite.')">Trimite intenția</button></div>`;
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Anulează</button><button class="btn primary" onclick="saveF('${f.id}');done('Aplicație începută!','Ți-am pregătit dosarul pentru <b>${f.title.replace(/'/g,'’')}</b>. L-am adăugat la finanțările tale urmărite.')">Trimite intenția</button></div>`;
   openModal();
 }
 
@@ -606,8 +606,8 @@ function openNgo(id){
   const people=n.people.map(p=>{const r=ROLE[p.t];return `<div class="person"><div class="oa" style="width:38px;height:38px;border-radius:50%;background:${r[2]};color:${r[1]};font-size:13px">${p.i}</div><div class="body"><h3>${p.n}</h3><div class="role">${p.r}</div></div><span class="ptag" style="background:${r[2]};color:${r[1]}">${r[0]}</span></div>`;}).join('');
   const projects=n.projects.map(p=>{const sc=p.s==='active'?'s-active':p.s==='plan'?'s-plan':'s-done';const sl=p.s==='active'?'în derulare':p.s==='plan'?'planificat':'încheiat';return `<div class="proj"><div class="pt"><h3>${p.t}</h3><div class="pm">${p.m}</div></div><span class="pstatus ${sc}">${sl}</span></div>`;}).join('');
   const myCol=COLLABS.filter(x=>x.ngo===id);
-  const needs=myCol.length?myCol.map(x=>{const t=CTYPE[x.type];return `<div class="need" onclick="openRespond(${x.id})"><h3>${x.title}</h3><div class="nm"><i class="ti ${t.i}"></i> ${t.l} · ${x.loc} · ${x.deadline}</div></div>`;}).join(''):'<div class="pm" style="color:var(--text-3);font-size:13px">Nicio colaborare deschisă.</div>';
-  const evs=EVENTS.filter(e=>n.events.includes(e.id)).map(e=>`<div class="proj"><div class="pt"><h3>${e.title}</h3><div class="pm">${e.d} ${e.m} · ${e.city}</div></div><button class="btn sm" onclick="openReg(${e.id})">Înscrie-te</button></div>`).join('')||'<div class="pm" style="color:var(--text-3);font-size:13px">Niciun eveniment programat.</div>';
+  const needs=myCol.length?myCol.map(x=>{const t=CTYPE[x.type];return `<div class="need" onclick="openRespond('${x.id}')"><h3>${x.title}</h3><div class="nm"><i class="ti ${t.i}"></i> ${t.l} · ${x.loc} · ${x.deadline}</div></div>`;}).join(''):'<div class="pm" style="color:var(--text-3);font-size:13px">Nicio colaborare deschisă.</div>';
+  const evs=EVENTS.filter(e=>n.events.includes(e.id)).map(e=>`<div class="proj"><div class="pt"><h3>${e.title}</h3><div class="pm">${e.d} ${e.m} · ${e.city}</div></div><button class="btn sm" onclick="openReg('${e.id}')">Înscrie-te</button></div>`).join('')||'<div class="pm" style="color:var(--text-3);font-size:13px">Niciun eveniment programat.</div>';
 
   document.getElementById('view-ngo').innerHTML=`
     <a class="back" onclick="go('map')"><i class="ti ti-arrow-left"></i> Înapoi la hartă</a>
