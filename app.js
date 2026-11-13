@@ -285,7 +285,7 @@ async function loadPublicData(){
       founded:n.founded_year||'',members:n.member_count||0,oi:n.initials||n.name.slice(0,2).toUpperCase(),
       tagline:n.tagline||n.description||'',web:n.website||'',email:n.contact_email||'',phone:n.phone||'',
       people:pe.filter(p=>p.ngo_id===n.id).map(p=>({n:p.name,r:p.role||'',i:p.initials||p.name.slice(0,2).toUpperCase(),t:p.role_type||'youth'})),
-      projects:pr.filter(p=>p.ngo_id===n.id).map(p=>({t:p.title,s:p.p.lifecycle==='active'?'active':p.lifecycle==='completed'?'done':'plan',m:p.status_text||''})),
+      projects:pr.filter(p=>p.ngo_id===n.id).map(p=>({t:p.title,s:p.lifecycle==='active'?'active':p.lifecycle==='completed'?'done':'plan',m:p.status_text||''})),
       events:ev.filter(e=>e.ngo_id===n.id).map(e=>e.id)
     })));
 
@@ -299,7 +299,7 @@ async function loadPublicData(){
     })));
 
     POSTS.splice(0,POSTS.length,...po.map(p=>{
-      const author=p.author_id?{k:'p',id:p.author_id}:p.ngo_id?{k:'n',id:p.ngo_id}:p.person_id?{k:'p',id:p.person_id}:{k:'me'};
+      const author=p.author_id?{k:'p',id:p.author_id}:p.ngo_id?{k:'n',id:p.ngo_id}:{k:'me'};
       const comments=cm.filter(c=>c.post_id===p.id).map(c=>({n:'',i:'',tag:'youth',time:new Date(c.created_at).toLocaleDateString('ro-RO'),text:c.body,raw:false}));
       return {id:String(p.id),a:author,type:p.type,time:new Date(p.created_at).toLocaleString('ro-RO'),likes:0,attach:p.event_id?{k:'ev',id:p.event_id}:p.collaboration_id?{k:'col',id:p.collaboration_id}:p.funding_id?{k:'fund',id:p.funding_id}:null,text:p.body,cmts:comments};
     }));
