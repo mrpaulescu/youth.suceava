@@ -12,17 +12,14 @@ drop policy if exists reg_ins on public.event_registrations;
 create policy reg_ins on public.event_registrations
 for insert to anon, authenticated
 with check (
-  (
+  status = 'registered'
+  and full_name is not null
+  and char_length(trim(full_name)) between 2 and 160
+  and email is not null
+  and email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'
+  and (
     (auth.uid() is not null and user_id = auth.uid())
-    or
-    (
-      auth.uid() is null
-      and user_id is null
-      and full_name is not null
-      and char_length(trim(full_name)) between 2 and 160
-      and email is not null
-      and email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'
-    )
+    or (auth.uid() is null and user_id is null)
   )
   and exists (
     select 1 from public.events e
@@ -42,7 +39,7 @@ begin
   from public.events where id = new.event_id for update;
   if not found then raise exception 'Evenimentul nu există.'; end if;
 
-  if event_capacity is not null then
+  if new.status = 'registered' and event_capacity is not null then
     select count(*) into current_count
     from public.event_registrations
     where event_id = new.event_id
