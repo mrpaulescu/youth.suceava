@@ -9,7 +9,7 @@ Platformă civică pentru Suceava și Bucovina: ONG-uri, evenimente, oameni, col
 - `data.js` — strat de acces la date, validare răspunsuri, directory și Storage.
 - `forms.js` — formulare de contribuție, răspunsuri la colaborări și moderare.
 - `supabase/migrations/` — migrările SQL versionate.
-- `forms.test.js` — teste unitare jsdom.
+- `tests/forms.test.js` — teste unitare jsdom.
 - `rls_test.sql` — verificări RLS (doar staging).
 - `smoke.spec.js` — smoke tests Playwright.
 - `audit-mock.sh` — audit orientativ al conținutului demo.
