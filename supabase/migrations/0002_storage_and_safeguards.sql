@@ -57,7 +57,7 @@ end $$;
 -- Convenție de cale: <user_id>/<nume-fișier>. Doar proprietarul scrie în folderul lui.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) values
   ('avatars',        'avatars',        true, 2097152,  array['image/jpeg','image/png','image/webp']),
-  ('ngo-logos',      'ngo-logos',      true, 2097152,  array['image/jpeg','image/png','image/webp','image/svg+xml']),
+  ('ngo-logos',      'ngo-logos',      true, 2097152,  array['image/jpeg','image/png','image/webp']),
   ('event-images',   'event-images',   true, 5242880,  array['image/jpeg','image/png','image/webp']),
   ('resource-files', 'resource-files', true, 15728640, array['application/pdf','image/jpeg','image/png','text/csv',
      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
