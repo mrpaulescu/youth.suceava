@@ -7,13 +7,13 @@
 
 ## 2. Mediu de test separat
 1. Creează un proiect Supabase **de staging** (gratuit).
-2. Rulează migrările în ordine: `0001_schema_and_rls.sql`, `0002_storage_and_safeguards.sql`.
+2. Rulează migrările în ordine: `0001_schema_and_rls.sql`, `0002_storage_and_safeguards.sql`, `0003_optional_guest_event_registration.sql`, `0003_optional_guest_event_registration.sql`.
 3. Rulează `psql -v ON_ERROR_STOP=1 -f rls_test.sql` conectat la staging (scriptul folosește comenzi psql și face `ROLLBACK`; nu rula pe producție).
 4. Abia apoi aplică aceleași migrări pe producție.
 
 ## 3. Migrare pe producția existentă (verifică înainte!)
 1. Exportă schema curentă: `supabase db dump --schema public > backup_inainte.sql` (sau backup din Dashboard).
-2. Compară tabelele/coloanele existente cu `SCHEMA.md`. `CREATE TABLE IF NOT EXISTS` **nu** modifică tabele existente: coloanele lipsă se adaugă printr-o migrare separată `0003_*.sql`.
+2. Compară tabelele/coloanele existente cu `SCHEMA.md`. `CREATE TABLE IF NOT EXISTS` **nu** modifică tabele existente: coloanele lipsă se adaugă printr-o migrare separată `0003_optional_guest_event_registration.sql`.
 3. Datele existente nu au `status` valid → după migrare rulează o singură dată `update <tabel> set status='published' where status is distinct from 'published';` pentru conținutul deja afișat public.
 4. Primul admin: `insert into user_roles (user_id, role) values ('<uuid din auth.users>', 'admin');`
 
@@ -26,7 +26,7 @@
 | `bash audit-mock.sh` | Candidați pentru conținut demo/succes fals (Faza 2) |
 
 ## 5. Deploy
-Site static: orice host static (GitHub Pages, Netlify, Cloudflare Pages). Nu există pas de build. Publică rădăcina repo-ului (`index.html`, `app.js`, `data.js`, `forms.js`, `supabase.js`). În Supabase → Authentication → URL Configuration adaugă domeniul de producție la *Site URL* / *Redirect URLs*.
+Site static: orice host static (GitHub Pages, Netlify, Cloudflare Pages). Nu există pas de build. Publică rădăcina repo-ului (`index.html`, `app.js`, `data.js`, `forms.js`, `auth.js`, `ui.css`, `supabase.js`). În Supabase → Authentication → URL Configuration adaugă domeniul de producție la *Site URL* / *Redirect URLs*.
 
 ## 6. Backup și recuperare
 - Activează backup-urile automate (plan Pro) sau programează `supabase db dump` săptămânal într-un loc separat.
