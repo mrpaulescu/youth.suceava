@@ -99,7 +99,7 @@ test('eveniment: data de final înainte de început este respinsă', async () =>
   const { w, doc, calls } = setup();
   await w.YSForms.openForm('event');
   const f = doc.querySelector('form');
-  f.elements.title.value = 'X'; f.elements.starts_at.value = '2026-12-02T10:00'; f.elements.ends_at.value = '2026-12-01T10:00';
+  f.elements.title.value = 'X'; f.elements.category.value = 'edu'; f.elements.starts_at.value = '2026-12-02T10:00'; f.elements.ends_at.value = '2026-12-01T10:00';
   f.dispatchEvent(new w.Event('submit', { cancelable: true, bubbles: true }));
   await tick();
   assert.match(doc.querySelector('.ys-err').textContent, /după început/);
