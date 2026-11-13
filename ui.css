@@ -1,0 +1,132 @@
+/* Youth Suceava — responsive UI refinement */
+:root{--content-max:1440px;--shadow-soft:0 8px 24px rgba(42,38,32,.055);--focus-ring:0 0 0 3px rgba(44,110,143,.18)}
+html{scroll-behavior:smooth;scroll-padding-top:100px}
+body{min-width:320px}
+.app{grid-template-columns:248px minmax(0,1fr)}
+.side{z-index:30;overflow-y:auto;overscroll-behavior:contain}
+.main{min-width:0}
+.content{width:100%;max-width:calc(var(--content-max) + 56px);margin-inline:auto;padding:30px clamp(20px,3vw,48px) 72px}
+.topbar{padding:14px clamp(20px,3vw,48px);gap:12px}
+#tb-title{min-width:190px}
+.topbar h1{font-size:24px}
+.search{min-width:clamp(190px,22vw,320px);max-width:420px}
+.btn,.chip,.nav,.bell-btn,.account-mini{transition:background-color .16s,border-color .16s,color .16s,transform .16s}
+.btn:focus-visible,.chip:focus-visible,.nav:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:0;box-shadow:var(--focus-ring)}
+.btn{min-height:40px}
+.btn.primary{box-shadow:0 2px 5px rgba(44,110,143,.12)}
+.nav{min-height:42px}
+.side-foot{gap:9px}
+.account-foot{margin-top:auto;min-width:0}
+.side-user-copy{min-width:0;flex:1;font-size:13px;font-weight:600}
+#side-user-meta{font-size:11px;color:var(--text-3);font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+.account-mini{width:34px;height:34px;border:1px solid var(--border);border-radius:9px;color:var(--text-2);display:grid;place-items:center}
+.account-mini:hover{background:var(--surface-2)}
+.account-top{white-space:nowrap}
+.view{animation:view-in .18s ease-out}
+@keyframes view-in{from{opacity:.65;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ev,.col,.fund,.pcard,.ng-card,.metric,.sec,.panel,.post{box-shadow:0 1px 2px rgba(42,38,32,.025)}
+.ev,.col,.fund,.pcard,.ng-card,.metric{transition:transform .16s,border-color .16s,box-shadow .16s}
+.ev:hover,.col:hover,.fund:hover,.pcard:hover,.ng-card:hover,.metric:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+.ev{align-items:flex-start}
+.ev .body{overflow-wrap:anywhere}
+.ev h3,.col h3,.fund h3,.pcard h3{overflow-wrap:anywhere}
+.ev .foot{row-gap:8px}
+.ev .spots{white-space:nowrap}
+.col-grid,.fund-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr))}
+.ppl-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
+.modal{max-width:600px;width:min(600px,100%);padding:clamp(20px,3vw,30px)}
+.modal:has(.auth-intro){max-width:460px}
+.overlay{z-index:100}
+.field input,.field select,.field textarea{min-height:44px;background:#fff;color:var(--text)}
+.field textarea{min-height:112px}
+.field label{color:var(--text)}
+.field .hint{font-size:12px;color:var(--text-3);margin-top:4px}
+.empty{padding:36px 22px;background:rgba(251,247,239,.55);border:1px dashed var(--border-2);border-radius:var(--radius)}
+.auth-intro{margin:0 0 20px}
+.auth-kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--info);font-weight:700}
+.auth-intro h2{font-size:26px;margin:6px 0}
+.auth-intro p,.auth-foot{font-size:13px;color:var(--text-2);line-height:1.65}
+.auth-form{display:grid;gap:2px}
+.auth-submit{width:100%;justify-content:center;margin-top:4px}
+.auth-error{color:#a33c30;font-size:13px;min-height:18px}
+.auth-notice{padding:10px 12px;border-radius:8px;background:var(--teal-bg);color:var(--teal);font-size:13px;margin-bottom:14px}
+.auth-switch{text-align:center;font-size:13px;color:var(--text-2);margin:16px 0}
+.auth-link{color:var(--info);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.auth-foot{border-top:1px solid var(--border);padding-top:12px}
+.account-actions{display:grid;gap:9px}
+.account-actions .btn{justify-content:center}
+.account-contribution{display:grid;grid-template-columns:1fr auto;gap:5px 12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+.account-contribution span{color:var(--info)}
+.account-contribution small{grid-column:1/-1;color:var(--text-2)}
+/* Contribution modal: readable form rhythm and clear section hierarchy */
+.ys-ov{z-index:120;backdrop-filter:blur(3px)}
+.ys-md{max-width:680px;padding:clamp(20px,3vw,30px);box-shadow:0 18px 60px rgba(30,28,24,.2)}
+.ys-md h2{font-size:25px;line-height:1.2}
+.ys-md form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
+.ys-md .ys-f{min-width:0}
+.ys-md .ys-f:has(textarea),.ys-md .ys-err,.ys-md .ys-ft{grid-column:1/-1}
+.ys-md .ys-f input,.ys-md .ys-f select,.ys-md .ys-f textarea{width:100%;min-height:44px;color:var(--text)}
+.ys-md .ys-f textarea{min-height:100px}
+.ys-md .ys-f label{font-weight:600}
+.ys-md .ys-ft{position:sticky;bottom:-30px;background:var(--surface);padding:14px 0 0;margin-top:12px;border-top:1px solid var(--border)}
+.ys-md .ys-b{min-height:42px}
+.ys-md .ys-b.pr{background:var(--info)}
+.ys-md .ys-row{gap:12px}
+.ys-md .ys-row>span:last-child{display:flex;gap:6px}
+.ys-toast{max-width:calc(100vw - 32px);text-align:center}
+@media(min-width:1500px){.app{grid-template-columns:260px minmax(0,1fr)}.content{padding-inline:52px}.topbar{padding-inline:52px}}
+@media(max-width:1100px){.app{grid-template-columns:220px minmax(0,1fr)}.content{padding-inline:22px}.topbar{padding-inline:22px}.search{min-width:170px}}
+@media(max-width:760px){
+ .app{display:block}
+ .side{position:fixed;left:0;top:0;bottom:0;width:min(290px,86vw);height:100dvh;transform:translateX(-105%);transition:transform .22s ease;box-shadow:10px 0 30px rgba(0,0,0,.12)}
+ .side.open{transform:translateX(0)}
+ .main{width:100%}
+ .topbar{position:sticky;padding:11px 14px;gap:9px;display:grid;grid-template-columns:40px minmax(0,1fr) auto;grid-template-areas:"menu title auth" "search search bell" "cta cta cta"}
+ .menu-btn{grid-area:menu}
+ #tb-title{grid-area:title;min-width:0}
+ .topbar h1{font-size:19px}
+ .topbar .sub{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+ .search{grid-area:search;min-width:0;max-width:none;width:100%;margin:0}
+ .account-top{grid-area:auth;min-height:36px;padding:6px 10px;font-size:12px}
+ .bell-btn{grid-area:bell;justify-self:end}
+ #tb-cta{grid-area:cta;width:100%;justify-content:center;min-height:42px}
+ .content{padding:18px 14px 52px}
+ .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .metric{padding:12px}
+ .metric .mv{font-size:23px}
+ .ev{padding:12px;gap:10px}
+ .ev .date{width:45px;padding-right:9px}
+ .ev .date .d{font-size:21px}
+ .ev .foot{align-items:flex-start}
+ .ev .spots{margin-left:0;width:100%}
+ .bar{flex:0 0 70px}
+ .ev>div:last-child{align-self:flex-end}
+ .col-grid,.fund-grid,.ppl-grid{grid-template-columns:minmax(0,1fr)}
+ .map-wrap{height:390px}
+ .ng-list{max-height:none}
+ .ng-head{padding:16px}
+ .ng-actions{margin-left:0;width:100%}
+ .ng-actions .btn{flex:1;justify-content:center}
+ .modal-actions{flex-direction:column}
+ .modal-actions .btn{width:100%}
+ .ys-ov{padding:10px}
+ .ys-md{max-height:calc(100dvh - 20px);padding:20px 16px}
+ .ys-md form{grid-template-columns:1fr}
+ .ys-md .ys-f,.ys-md .ys-err,.ys-md .ys-ft{grid-column:1}
+ .ys-md .ys-ft{bottom:-20px}
+ .ys-md .ys-ft .ys-b{flex:1}
+ .split,.home-grid,.grid2,.map-split{grid-template-columns:minmax(0,1fr)}
+ .aside{display:none}
+ .sec,.panel{padding:14px}
+ .empty{padding:28px 14px}
+}
+@media(max-width:390px){
+ .topbar .sub{display:none}
+ .metrics{grid-template-columns:1fr 1fr}
+ .btn{padding:8px 10px}
+ .ev .foot .org{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.view{animation:none}.side{transition:none}}
+
+.field-hint{display:block;color:var(--text-3);font-size:12px;line-height:1.5;margin-top:2px}
+.registration-note{padding:11px 13px;background:var(--info-bg);color:var(--info);border-radius:8px;font-size:13px;line-height:1.5;margin:14px 0}

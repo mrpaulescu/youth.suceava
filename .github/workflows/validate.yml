@@ -1,0 +1,14 @@
+name: Validate platform
+# Keep syntax and form workflow checks current for UI/account changes.
+on:
+  pull_request:
+  push:
+    branches: [main, feature/platform-backend-foundation]
+jobs:
+  unit-and-syntax:
+    runs-on: ubuntu-latest
+    container: node:20
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install
+      - run: npm test

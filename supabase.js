@@ -5,3 +5,5 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
+// Expose the configured client to the classic-script data/forms modules.
+window.supabaseClient = supabaseClient;
