@@ -136,13 +136,13 @@
   // ---------- randare câmp ----------
   function fieldHtml(f) {
     const id = 'ysf_' + f.n, req = f.req ? ' required' : '';
-    const lab = `<label for="${id}">${esc(f.l)}${f.req ? ' *' : ''}</label>`;
-    const hint = f.hint ? `<small class="field-hint">${esc(f.hint)}</small>` : '';
-    if (f.t === 'checkbox') return `<div class="ys-f ck"><input type="checkbox" id="${id}" name="${f.n}"><label for="${id}">${esc(f.l)}</label>${hint}</div>`;
+    const lab = `<label for="${id}">${escapeHTML(f.l)}${f.req ? ' *' : ''}</label>`;
+    const hint = f.hint ? `<small class="field-hint">${escapeHTML(f.hint)}</small>` : '';
+    if (f.t === 'checkbox') return `<div class="ys-f ck"><input type="checkbox" id="${id}" name="${f.n}"><label for="${id}">${escapeHTML(f.l)}</label>${hint}</div>`;
     let input;
     if (f.t === 'textarea') input = `<textarea id="${id}" name="${f.n}" rows="4"${f.max ? ` maxlength="${f.max}"` : ''}${req}></textarea>`;
     else if (f.t === 'select') {
-      const opts = f.o.map((o) => Array.isArray(o) ? `<option value="${esc(o[0])}">${esc(o[1])}</option>` : `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+      const opts = f.o.map((o) => Array.isArray(o) ? `<option value="${escapeHTML(o[0])}">${escapeHTML(o[1])}</option>` : `<option value="${escapeHTML(o)}">${escapeHTML(o)}</option>`).join('');
       input = `<select id="${id}" name="${f.n}"${req}><option value="">— alege —</option>${opts}</select>`;
     } else input = `<input id="${id}" name="${f.n}" type="${f.t || 'text'}"${f.max ? ` maxlength="${f.max}"` : ''}${f.min != null ? ` min="${f.min}"` : ''}${req}>`;
     return `<div class="ys-f">${lab}${input}${hint}</div>`;
@@ -193,7 +193,7 @@
       field.o = orgs.map(org => [org.id, org.name]);
       if (!field.req) field.o.unshift(['', 'Fără organizație']);
     }
-    const m = modal(`<h2>${esc(cfg.title)}</h2>
+    const m = modal(`<h2>${escapeHTML(cfg.title)}</h2>
       <form novalidate>${cfg.fields.map(fieldHtml).join('')}
         <div class="ys-err" role="alert"></div>
         <div class="ys-ft"><button type="button" class="ys-b" data-x>Anulează</button><button class="ys-b pr">${record ? 'Salvează modificările' : 'Trimite spre aprobare'}</button></div>
@@ -234,7 +234,7 @@
   // ---------- răspuns la colaborare ----------
   async function openCollabResponse(collabId, title = '') {
     if (!(await needAuth())) return;
-    const m = modal(`<h2>Răspunde la: ${esc(title)}</h2><form novalidate>
+    const m = modal(`<h2>Răspunde la: ${escapeHTML(title)}</h2><form novalidate>
       <div class="ys-f"><label for="ysr_t">Răspund ca</label><select id="ysr_t"><option>Organizație</option><option>Voluntar</option><option>Persoană fizică</option></select></div>
       <div class="ys-f"><label for="ysr_m">Mesaj *</label><textarea id="ysr_m" rows="5" maxlength="2000" required></textarea></div>
       <div class="ys-err" role="alert"></div>
@@ -272,8 +272,8 @@
       list.innerHTML = 'Se încarcă…';
       const { data, error } = await Moderation.pending(table);
       if (error) { list.textContent = error; return; }
-      if (!data.length) { list.innerHTML = `<p>Nu există ${esc(label.toLowerCase())} în așteptare.</p>`; return; }
-      list.innerHTML = data.map((r) => `<div class="ys-row" data-id="${esc(r.id)}"><span>${esc(r[col])}</span>
+      if (!data.length) { list.innerHTML = `<p>Nu există ${escapeHTML(label.toLowerCase())} în așteptare.</p>`; return; }
+      list.innerHTML = data.map((r) => `<div class="ys-row" data-id="${escapeHTML(r.id)}"><span>${escapeHTML(r[col])}</span>
         <span><button class="ys-b pr" data-a="ok">Aprobă</button> <button class="ys-b" data-a="no">Respinge</button></span></div>`).join('');
       list.onclick = async (e) => {
         const b = e.target.closest('button[data-a]'); if (!b) return;
