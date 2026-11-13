@@ -1,4 +1,5 @@
 name: Validate platform
+# Keep syntax and form workflow checks current for UI/account changes.
 on:
   pull_request:
   push:
