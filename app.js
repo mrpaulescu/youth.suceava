@@ -319,7 +319,7 @@ async function loadUserState(){
     supabaseClient.from('saved_funding').select('funding_id').eq('user_id',uid),
     supabaseClient.from('post_likes').select('post_id').eq('user_id',uid),
     supabaseClient.from('follows').select('ngo_id,person_id').eq('user_id',uid),
-    supabaseClient.from('posts').select('*').eq('user_id',uid).order('created_at',{ascending:false}),
+    supabaseClient.from('posts').select('*').eq('author_id',uid).order('created_at',{ascending:false}),
     supabaseClient.from('comments').select('*').eq('user_id',uid).order('created_at'),
     supabaseClient.from('notifications').select('*').eq('user_id',uid).is('read_at',null).order('created_at',{ascending:false})
   ]);
