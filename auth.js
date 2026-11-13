@@ -4,7 +4,7 @@
   let profile = null;
   let user = null;
 
-  const initials = (name) => (String(name || 'Cont utilizator').trim().split(/\\s+/).slice(0,2).map(x => x[0] || '').join('').toUpperCase() || 'CU');
+  const initials = (name) => (String(name || 'Cont utilizator').trim().split(/\s+/).slice(0,2).map(x => x[0] || '').join('').toUpperCase() || 'CU');
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   function identity() {
@@ -135,6 +135,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', refresh);
-  client().auth.onAuthStateChange(() => { refresh().then(() => window.dispatchEvent(new CustomEvent('ys:auth-changed'))); });
+  client().auth.onAuthStateChange(() => { window.setTimeout(() => refresh().then(() => window.dispatchEvent(new CustomEvent('ys:auth-changed'))), 0); });
   window.YSAuth = { open, openAccount, refresh, identity, getUser: () => user };
 })();
