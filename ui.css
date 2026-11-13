@@ -127,3 +127,6 @@ body{min-width:320px}
  .ev .foot .org{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.view{animation:none}.side{transition:none}}
+
+.field-hint{display:block;color:var(--text-3);font-size:12px;line-height:1.5;margin-top:2px}
+.registration-note{padding:11px 13px;background:var(--info-bg);color:var(--info);border-radius:8px;font-size:13px;line-height:1.5;margin:14px 0}
