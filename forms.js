@@ -180,7 +180,7 @@
     if (cfg.fields.some(field => field.n === 'ngo_id')) {
       const { data: orgs } = await supabase.from('ngos').select('id,name').order('name');
       const field = cfg.fields.find(field => field.n === 'ngo_id');
-      field.o = (orgs || []).map(org => [org.id, org.name]);
+      field.o = (Array.isArray(orgs) ? orgs : []).map(org => [org.id, org.name]);
       if (!field.req) field.o.unshift(['', 'Fără organizație']);
     }
     const m = modal(`<h2>${esc(cfg.title)}</h2>
