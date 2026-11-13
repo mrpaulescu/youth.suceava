@@ -270,11 +270,11 @@ async function loadPublicData(){
   try{
     const [ng,pe,pr,ev,co,fu,re,po,cm]=await Promise.all([
       dbSelect('ngos',q=>q.eq('status','published').order('name')),
-      dbSelect('people',q=>q.order('name')),
-      dbSelect('projects',q=>q.order('created_at',{ascending:false})),
+      dbSelect('people',q=>q.eq('status','published').order('name')),
+      dbSelect('projects',q=>q.eq('status','published').order('created_at',{ascending:false})),
       dbSelect('events',q=>q.eq('status','published').order('starts_at')),
-      dbSelect('collaborations',q=>q.eq('status','open').order('created_at',{ascending:false})),
-      dbSelect('funding_opportunities',q=>q.in('status',['open','soon']).order('deadline_at')),
+      dbSelect('collaborations',q=>q.eq('status','published').eq('is_open',true).order('created_at',{ascending:false})),
+      dbSelect('funding_opportunities',q=>q.eq('status','published').order('deadline')),
       dbSelect('resources',q=>q.eq('status','published').order('created_at',{ascending:false})),
       dbSelect('posts',q=>q.eq('status','published').order('created_at',{ascending:false})),
       dbSelect('comments',q=>q.eq('status','published').order('created_at'))
@@ -283,9 +283,9 @@ async function loadPublicData(){
     NGOS.splice(0,NGOS.length,...ng.map(n=>({
       ...n,id:n.id,name:n.name,cat:n.category,city:n.city,x:n.map_x??50,y:n.map_y??50,
       founded:n.founded_year||'',members:n.member_count||0,oi:n.initials||n.name.slice(0,2).toUpperCase(),
-      tagline:n.tagline||n.description||'',web:n.website||'',email:n.email||'',phone:n.phone||'',
+      tagline:n.tagline||n.description||'',web:n.website||'',email:n.contact_email||'',phone:n.phone||'',
       people:pe.filter(p=>p.ngo_id===n.id).map(p=>({n:p.name,r:p.role||'',i:p.initials||p.name.slice(0,2).toUpperCase(),t:p.role_type||'youth'})),
-      projects:pr.filter(p=>p.ngo_id===n.id).map(p=>({t:p.title,s:p.status==='active'?'active':p.status==='completed'?'done':'plan',m:p.status_text||''})),
+      projects:pr.filter(p=>p.ngo_id===n.id).map(p=>({t:p.title,s:p.p.lifecycle==='active'?'active':p.lifecycle==='completed'?'done':'plan',m:p.status_text||''})),
       events:ev.filter(e=>e.ngo_id===n.id).map(e=>e.id)
     })));
 
@@ -295,13 +295,13 @@ async function loadPublicData(){
     RES.splice(0,RES.length,...re.map(r=>({...r,id:r.id,cat:r.category,fmt:r.type||'',desc:r.description||''})));
 
     PEOPLE.splice(0,PEOPLE.length,...pe.map(p=>({
-      ...p,id:p.id,n:p.name,i:p.initials||p.name.slice(0,2).toUpperCase(),role:p.role||'',tag:p.role_type||'youth',ngo:p.ngo_id,email:p.email||'',bio:p.bio||''
+      ...p,id:p.id,n:p.name,i:p.initials||p.name.slice(0,2).toUpperCase(),role:p.role||'',tag:p.role_type||'youth',ngo:p.ngo_id,email:p.public_contact||'',bio:p.bio||''
     })));
 
     POSTS.splice(0,POSTS.length,...po.map(p=>{
       const author=p.author_id?{k:'p',id:p.author_id}:p.ngo_id?{k:'n',id:p.ngo_id}:p.person_id?{k:'p',id:p.person_id}:{k:'me'};
-      const comments=cm.filter(c=>c.post_id===p.id).map(c=>({n:'',i:'',tag:'youth',time:new Date(c.created_at).toLocaleDateString('ro-RO'),text:c.text_content,raw:false}));
-      return {id:String(p.id),a:author,type:p.post_type,time:new Date(p.created_at).toLocaleString('ro-RO'),likes:0,attach:p.event_id?{k:'ev',id:p.event_id}:p.collaboration_id?{k:'col',id:p.collaboration_id}:p.funding_id?{k:'fund',id:p.funding_id}:null,text:p.text_content,cmts:comments};
+      const comments=cm.filter(c=>c.post_id===p.id).map(c=>({n:'',i:'',tag:'youth',time:new Date(c.created_at).toLocaleDateString('ro-RO'),text:c.body,raw:false}));
+      return {id:String(p.id),a:author,type:p.type,time:new Date(p.created_at).toLocaleString('ro-RO'),likes:0,attach:p.event_id?{k:'ev',id:p.event_id}:p.collaboration_id?{k:'col',id:p.collaboration_id}:p.funding_id?{k:'fund',id:p.funding_id}:null,text:p.body,cmts:comments};
     }));
   }catch(err){
     console.error('Supabase public data load failed:',err);
