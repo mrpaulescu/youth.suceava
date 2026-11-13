@@ -42,8 +42,11 @@ async function registerEvent(id){
   const email=(document.getElementById('reg-email')?.value||user?.email||'').trim();
   if(!name||!email){const err=document.getElementById('reg-error');if(err)err.textContent='Completează numele și adresa de email pentru confirmarea înscrierii.';return false;}
   const payload={event_id:id,user_id:user?.id||null,status:'registered',full_name:name,email};
-  const {error}=await supabaseClient.from('event_registrations').insert(payload);
-  if(error){const err=document.getElementById('reg-error');if(err)err.textContent=error.message.includes('locuri disponibile')?'Nu mai sunt locuri disponibile.':error.message.includes('duplicate')?'Există deja o înscriere cu această adresă de email.': 'Nu am putut salva înscrierea. Verifică datele și încearcă din nou.';return false;}
+  const query=user
+    ? supabaseClient.from('event_registrations').upsert(payload,{onConflict:'event_id,user_id'})
+    : supabaseClient.from('event_registrations').insert(payload);
+  const {error}=await query;
+  if(error){const err=document.getElementById('reg-error');if(err)err.textContent=error.message.includes('locuri disponibile')?'Nu mai sunt locuri disponibile.':error.code==='23505'?'Există deja o înscriere cu această adresă de email.':'Nu am putut salva înscrierea. Verifică datele și încearcă din nou.';return false;}
   if(user)await loadUserState();
   refresh();return true;
 }
@@ -488,7 +491,7 @@ function renderEvents(){
       <div class="body"><div class="tags"><span class="tag ${c.cls}">${c.label}</span>${e.online?'<span class="tag t-on">Online</span>':''}</div>
         <h3>${e.title}</h3>
         <div class="meta"><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span></div>
-        <div class="foot"><div class="org link" onclick="openNgo('${ng.id}')"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> ${ng.name}</div>
+        <div class="foot"><div class="org"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> ${ng.name}</div>
           <div class="spots">${e.cap?`<div class="bar"><i style="width:${pct}%"></i></div> ${left} locuri`:'Înscriere deschisă'}</div></div></div>
       <div style="display:flex;align-items:center">${isReg(e.id)?`<button class="btn sm" style="color:var(--teal);border-color:var(--teal)" onclick="unregisterEvent('${e.id}')"><i class="ti ti-check"></i> Înscris</button>`:`<button class="btn primary sm" onclick="openReg('${e.id}')">Înscrie-te</button>`}</div></div>`;
   });
