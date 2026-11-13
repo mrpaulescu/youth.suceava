@@ -8,6 +8,8 @@ Platformă civică pentru Suceava și Bucovina: ONG-uri, evenimente, oameni, col
 - `supabase.js` — Supabase URL și cheia publică anon/publishable.
 - `data.js` — strat de acces la date, validare răspunsuri, directory și Storage.
 - `forms.js` — formulare de contribuție, răspunsuri la colaborări și moderare.
+- `auth.js` — autentificare și înregistrare opțională; navigarea publică rămâne deschisă.
+- `ui.css` — ajustări responsive pentru desktop, tabletă și mobil.
 - `supabase/migrations/` — migrările SQL versionate.
 - `tests/forms.test.js` — teste unitare jsdom.
 - `rls_test.sql` — verificări RLS (doar staging).
@@ -37,7 +39,7 @@ npm run audit:mock
 
 ## Ordinea scripturilor
 
-În `index.html`: Supabase JS SDK → `supabase.js` → aliasul global Supabase → `data.js` → `forms.js` → `app.js`.
+În `index.html`: Supabase JS SDK → `supabase.js` → `data.js` → `forms.js` → `auth.js` → `app.js`.
 
 ## Database și deployment
 
