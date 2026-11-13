@@ -19,7 +19,7 @@
     const meta = document.getElementById('side-user-meta');
     const avatar = document.getElementById('side-avatar');
     const sideAction = document.getElementById('side-account-action');
-    if (action) action.textContent = user ? 'Contul meu' : 'Autentificare';
+    if (action) action.textContent = user ? 'Contul meu' : 'Intră / creează cont';
     if (name) name.textContent = user ? who.name : 'Vizitator';
     if (meta) meta.textContent = user ? who.email : 'Explorezi fără cont';
     if (avatar) avatar.textContent = user ? who.initials : 'V';
