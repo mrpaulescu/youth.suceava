@@ -75,6 +75,7 @@ const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&qu
 const PTYPE={update:['Actualizare','t-edu'],anunt:['Anunț','t-on'],intrebare:['Întrebare','t-soc'],consult:['Consultare publică','t-civ'],realizare:['Reușită','t-env']};
 
 const POSTS=[];
+const PROFILES=[];
 
 const NOTIFS=[];
 const NC={info:['var(--info-bg)','var(--info)'],teal:['var(--teal-bg)','var(--teal)'],coral:['var(--coral-bg)','var(--coral)'],purple:['var(--purple-bg)','var(--purple)'],amber:['var(--amber-bg)','var(--amber)']};
@@ -122,18 +123,26 @@ document.addEventListener('click',e=>{
 let feedFilter='all';const openCmts=new Set();
 const FEED_FILTERS=[['all','Toate'],['following','Urmăresc'],['consult','Consultări publice'],['ong','ONG-uri'],['pol','Policymakeri'],['vol','Voluntari & tineri']];
 function setFeedFilter(k){feedFilter=k;renderFeed();}
-const allPosts=()=>store.myPosts.concat(POSTS);
+const allPosts=()=>POSTS;
 function postAuthor(a){
   if(a.k==='me'){const u=viewer();return{n:u.name,i:u.initials,sub:u.role+' · comunitate',bg:ROLE.vol[2],col:ROLE.vol[1],role:u.role,tag:'vol',click:''};}
-  if(a.k==='p'){const p=PEOPLE.find(x=>x.id===a.id),ng=ngoById(p.ngo),r=ROLE[p.tag];
+  if(a.k==='u'){
+    const currentUser=window.YSAuth?.getUser?.();
+    if(currentUser?.id===a.id){const u=viewer();return{n:u.name,i:u.initials,sub:u.role+' · comunitate',bg:ROLE.vol[2],col:ROLE.vol[1],role:u.role,tag:'vol',click:''};}
+    const p=PEOPLE.find(x=>x.user_id===a.id);
+    if(p){const ng=ngoById(p.ngo)||{name:'Comunitate locală'},r=ROLE[p.tag]||ROLE.youth;return{n:p.n,i:p.i,sub:`${p.role} · ${ng.name}`,bg:r[2],col:r[1],role:r[0],tag:p.tag,click:`openPerson('${p.id}')`};}
+    const profile=PROFILES.find(x=>x.id===a.id),name=profile?.display_name||'Membru al comunității',initials=name.split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+    return{n:name,i:initials,sub:'membru · Bucovina',bg:ROLE.youth[2],col:ROLE.youth[1],role:'Membru',tag:'youth',click:''};
+  }
+  if(a.k==='p'){const p=PEOPLE.find(x=>x.id===a.id);if(!p)return{n:'Membru',i:'M',sub:'comunitate',bg:ROLE.youth[2],col:ROLE.youth[1],role:'Membru',tag:'youth',click:''};const ng=ngoById(p.ngo)||{name:'Comunitate locală'},r=ROLE[p.tag]||ROLE.youth;
     return{n:p.n,i:p.i,sub:`${p.role} · ${ng.name}`,bg:r[2],col:r[1],role:r[0],tag:p.tag,click:`openPerson('${p.id}')`};}
-  const n=ngoById(a.id),c=CAT[n.cat];
+  const n=ngoById(a.id),c=CAT[n?.cat]||CAT.soc; if(!n)return{n:'Organizație',i:'ONG',sub:'comunitate',bg:c.bg,col:c.color,role:'ONG',tag:'ong',click:''};
   return{n:n.name,i:n.oi,sub:`organizație · ${n.city}`,bg:c.bg,col:c.color,role:'ONG',tag:'ong',click:`openNgo('${n.id}')`};
 }
 function attachCard(at){
   if(!at)return'';
-  if(at.k==='ev'){const e=EVENTS.find(x=>x.id===at.id);if(!e)return'';const c=CAT[e.cat];
-    return `<div class="attach" onclick="openReg('${e.id}')"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ti-calendar-event"></i></div><div class="ab"><h3>${e.title}</h3><div class="as">${e.d} ${e.m} · ${e.venue}, ${e.city} · ${e.cap-e.spots} locuri libere</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
+  if(at.k==='ev'){const e=EVENTS.find(x=>x.id===at.id);if(!e)return'';const c=CAT[e.cat]||CAT.soc;
+    return `<div class="attach" onclick="openReg('${e.id}')"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ti-calendar-event"></i></div><div class="ab"><h3>${e.title}</h3><div class="as">${e.d} ${e.m} · ${e.venue}, ${e.city} · ${e.cap?`${e.cap-e.spots} locuri libere`:'înscriere deschisă'}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
   if(at.k==='col'){const x=COLLABS.find(c=>c.id===at.id);if(!x)return'';const t=CTYPE[x.type],c=CAT[x.cat];
     return `<div class="attach" onclick="openRespond('${x.id}')"><div class="ai" style="background:${c.bg};color:${c.color}"><i class="ti ${t.i}"></i></div><div class="ab"><h3>${x.title}</h3><div class="as">${t.l} · ${x.loc} · termen ${x.deadline}</div></div><i class="ti ti-chevron-right chev2"></i></div>`;}
   if(at.k==='fund'){const f=FUND.find(x=>x.id===at.id);if(!f)return'';
@@ -143,8 +152,7 @@ function attachCard(at){
 function postCard(p){
   const au=postAuthor(p.a),ty=PTYPE[p.type]||PTYPE.update;
   const liked=store.likes.includes(p.id);
-  const myC=(store.myCmts[p.id]||[]).map(c=>({n:viewer().name,i:viewer().initials,tag:'vol',time:c.time,text:c.text,raw:true}));
-  const cmts=(p.cmts||[]).concat(myC);
+  const cmts=p.cmts||[];
   const likeN=p.likes+(liked?1:0);
   let headBtn='';
   if(p.a.k==='me')headBtn=`<button class="followb on" title="Șterge postarea" onclick="delPost('${p.id}')"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
@@ -176,7 +184,7 @@ function renderFeed(){
     const au=postAuthor(p.a);
     if(q&&!(p.text+au.n).toLowerCase().includes(q))return false;
     if(feedFilter==='all')return true;
-    if(feedFilter==='following')return p.a.k==='me'||isFollowed(fkey(p.a))||(p.a.k==='p'&&isFollowed('n:'+PEOPLE.find(x=>x.id===p.a.id).ngo));
+    if(feedFilter==='following')return p.a.k==='me'||isFollowed(fkey(p.a))||(p.a.k==='p'&&PEOPLE.find(x=>x.id===p.a.id)?.ngo&&isFollowed('n:'+PEOPLE.find(x=>x.id===p.a.id).ngo));
     if(feedFilter==='consult')return p.type==='consult';
     if(feedFilter==='pol')return au.tag==='pol';
     if(feedFilter==='ong')return au.tag==='ong';
@@ -276,7 +284,7 @@ function eventView(e){
   const months=['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'];
   const days=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'];
   const time=e.ends_at
-    ? `${d.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})}–${new Date(e.end_at).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})}`
+    ? `${d.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})}–${new Date(e.ends_at).toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'})}`
     : d.toLocaleTimeString('ro-RO',{hour:'2-digit',minute:'2-digit'});
   return {...e,
     id:e.id,d:d.getDate(),m:months[d.getMonth()],day:days[d.getDay()],
@@ -287,7 +295,7 @@ function eventView(e){
 
 async function loadPublicData(){
   try{
-    const [ng,pe,pr,ev,co,fu,re,po,cm]=await Promise.all([
+    const [ng,pe,pr,ev,co,fu,re,po,cm,profiles]=await Promise.all([
       dbSelect('ngos',q=>q.eq('status','published').order('name')),
       dbSelect('people',q=>q.eq('status','published').order('name')),
       dbSelect('projects',q=>q.eq('status','published').order('created_at',{ascending:false})),
@@ -296,7 +304,8 @@ async function loadPublicData(){
       dbSelect('funding_opportunities',q=>q.eq('status','published').order('deadline')),
       dbSelect('resources',q=>q.eq('status','published').order('created_at',{ascending:false})),
       dbSelect('posts',q=>q.eq('status','published').order('created_at',{ascending:false})),
-      dbSelect('comments',q=>q.eq('status','published').order('created_at'))
+      dbSelect('comments',q=>q.eq('status','published').order('created_at')),
+      dbSelect('profiles',q=>q.select('id,display_name,profile_type'))
     ]);
 
     NGOS.splice(0,NGOS.length,...ng.map(n=>({
@@ -308,6 +317,7 @@ async function loadPublicData(){
       events:ev.filter(e=>e.ngo_id===n.id).map(e=>e.id)
     })));
 
+    PROFILES.splice(0,PROFILES.length,...profiles);
     EVENTS.splice(0,EVENTS.length,...ev.map(eventView));
     COLLABS.splice(0,COLLABS.length,...co.map(c=>({...c,id:c.id,ngo:c.ngo_id,cat:c.category,type:c.type==='volunteer'?'vol':c.type==='funding'?'fund':c.type,loc:c.location||'Suceava',deadline:c.deadline||'fără termen',desc:c.description||''})));
     FUND.splice(0,FUND.length,...fu.map(f=>({...f,id:f.id,amount:f.amount_text||'',deadline:f.deadline||'',cats:f.categories||[],desc:f.description||''})));
@@ -318,7 +328,7 @@ async function loadPublicData(){
     })));
 
     POSTS.splice(0,POSTS.length,...po.map(p=>{
-      const author=p.author_id?{k:'p',id:p.author_id}:p.ngo_id?{k:'n',id:p.ngo_id}:{k:'me'};
+      const author=p.author_id?{k:'u',id:p.author_id}:p.ngo_id?{k:'n',id:p.ngo_id}:{k:'me'};
       const comments=cm.filter(c=>c.post_id===p.id).map(c=>({n:'',i:'',tag:'youth',time:new Date(c.created_at).toLocaleDateString('ro-RO'),text:c.body,raw:false}));
       return {id:String(p.id),a:author,type:p.type,time:new Date(p.created_at).toLocaleString('ro-RO'),likes:0,attach:p.event_id?{k:'ev',id:p.event_id}:p.collaboration_id?{k:'col',id:p.collaboration_id}:p.funding_id?{k:'fund',id:p.funding_id}:null,text:p.body,cmts:comments};
     }));
@@ -410,7 +420,7 @@ function onSearch(){if(current==='events')renderEvents();if(current==='map')rend
 
 /* HOME */
 function renderHome(){
-  const events3=EVENTS.slice(0,3).map(e=>{const c=CAT[e.cat],ng=ngoById(e.ngo);
+  const events3=EVENTS.slice(0,3).map(e=>{const c=CAT[e.cat]||CAT.soc,ng=ngoById(e.ngo)||{name:'Comunitate locală',oi:'BC'};
     return `<div class="row"><div class="datebox"><div class="d">${e.d}</div><div class="m">${e.m}</div></div>
       <div class="rb"><h3>${e.title}</h3><div class="rs"><span class="tag ${c.cls}" style="font-size:10px;padding:1px 7px">${c.label}</span><i class="ti ti-map-pin"></i> ${e.city}</div></div>
       <button class="btn primary sm" onclick="openReg('${e.id}')">Înscrie-te</button></div>`;}).join('');
@@ -637,7 +647,7 @@ function openReg(id){
     <div class="tags" style="margin-bottom:10px"><span class="tag ${c.cls}">${c.label}</span>${e.online?'<span class="tag t-on">Online</span>':''}</div>
     <h2>${e.title}</h2>
     <div class="org"><div class="oa" style="background:${c.bg};color:${c.color}">${ng.oi}</div> Organizat de ${ng.name}</div>
-    <div class="mmeta"><span><i class="ti ti-calendar"></i> ${new Date(e.starts_at).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric',weekday:'long'})}</span><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span><span><i class="ti ti-users"></i> ${e.cap-e.spots} din ${e.cap} locuri</span></div>
+    <div class="mmeta"><span><i class="ti ti-calendar"></i> ${new Date(e.starts_at).toLocaleDateString('ro-RO',{day:'numeric',month:'long',year:'numeric',weekday:'long'})}</span><span><i class="ti ti-clock"></i> ${e.time}</span><span><i class="ti ti-map-pin"></i> ${e.venue}, ${e.city}</span><span><i class="ti ti-users"></i> ${e.cap?`${e.cap-e.spots} din ${e.cap} locuri`:'Înscriere deschisă'}</span></div>
     <p class="desc">${e.desc}</p>
     <div class="registration-note">Te poți înscrie fără cont. Dacă ești autentificat, înscrierea va apărea și în contul tău.</div>
     <div class="field" style="margin-top:14px"><label for="reg-name">Nume complet</label><input id="reg-name" autocomplete="name" required maxlength="160" placeholder="Numele tău" value="${esc(viewer().name==='Vizitator'?'':viewer().name)}"></div>
@@ -647,7 +657,7 @@ function openReg(id){
   openModal();
 }
 function openRespond(id){
-  const x=COLLABS.find(c=>c.id===id),t=CTYPE[x.type],c=CAT[x.cat],ng=ngoById(x.ngo);
+  const x=COLLABS.find(c=>c.id===id);if(!x)return;const t=CTYPE[x.type]||CTYPE.partner,c=CAT[x.cat]||CAT.soc,ng=ngoById(x.ngo)||{name:'Comunitate locală',oi:'BC'};
   document.getElementById('modal-content').innerHTML=`
     <div class="tags" style="margin-bottom:10px"><span class="ctype ${t.cls}"><i class="ti ${t.i}" style="font-size:13px"></i> ${t.l}</span><span class="tag ${c.cls}">${c.label}</span></div>
     <h2>${x.title}</h2>
