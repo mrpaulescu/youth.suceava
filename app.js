@@ -322,9 +322,9 @@ async function loadPublicData(){
 
     PROFILES.splice(0,PROFILES.length,...profiles);
     EVENTS.splice(0,EVENTS.length,...ev.map(eventView));
-    COLLABS.splice(0,COLLABS.length,...co.map(c=>({...c,id:c.id,ngo:c.ngo_id,cat:c.category,type:c.type==='volunteer'?'vol':c.type==='funding'?'fund':c.type,loc:c.location||'Suceava',deadline:c.deadline||'fără termen',desc:c.description||''})));
+    COLLABS.splice(0,COLLABS.length,...co.map(c=>({...c,id:c.id,ngo:c.ngo_id,cat:c.category,type:c.type==='volunteer'?'vol':c.type==='funding'?'fund':c.type,cat:c.category||'civ',loc:c.location||'Suceava',deadline:c.deadline||'fără termen',desc:c.description||''})));
     FUND.splice(0,FUND.length,...fu.map(f=>({...f,id:f.id,amount:f.amount_text||'',deadline:f.deadline||'',cats:f.categories||[],desc:f.description||''})));
-    RES.splice(0,RES.length,...re.map(r=>({...r,id:r.id,cat:r.category,fmt:r.type||'',desc:r.description||''})));
+    RES.splice(0,RES.length,...re.map(r=>({...r,id:r.id,cat:r.category||'civ',fmt:r.type||'',desc:r.description||''})));
 
     PEOPLE.splice(0,PEOPLE.length,...pe.map(p=>({
       ...p,id:p.id,n:p.name,i:p.initials||p.name.slice(0,2).toUpperCase(),role:p.role||'',tag:p.role_type||'youth',ngo:p.ngo_id,email:p.public_contact||'',bio:p.bio||''
