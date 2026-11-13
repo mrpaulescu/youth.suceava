@@ -1,14 +1,14 @@
 # Operațiuni: configurare, deploy, backup, responsabilități
 
 ## 1. Mediu și chei
-- `supabase.js` conține **doar** URL-ul proiectului și cheia `anon`/publishable (sigură în browser **doar dacă RLS este activ** — este, vezi `tests/rls_test.sql`).
+- `supabase.js` conține **doar** URL-ul proiectului și cheia `anon`/publishable (sigură în browser **doar dacă RLS este activ** — este, vezi `rls_test.sql`).
 - **Nu** pune niciodată `service_role` sau alte secrete în repo/frontend. Pentru Edge Functions folosește `supabase secrets set NUME=valoare`.
 - Dacă o cheie secretă a ajuns vreodată în Git: rotește-o din Supabase → Project Settings → API.
 
 ## 2. Mediu de test separat
 1. Creează un proiect Supabase **de staging** (gratuit).
 2. Rulează migrările în ordine: `0001_schema_and_rls.sql`, `0002_storage_and_safeguards.sql`.
-3. Rulează `tests/rls_test.sql` în SQL Editor (face `ROLLBACK` la final; **doar pe staging**; nu folosi `local_stub.sql` acolo).
+3. Rulează `psql -v ON_ERROR_STOP=1 -f rls_test.sql` conectat la staging (scriptul folosește comenzi psql și face `ROLLBACK`; nu rula pe producție).
 4. Abia apoi aplică aceleași migrări pe producție.
 
 ## 3. Migrare pe producția existentă (verifică înainte!)
@@ -21,9 +21,9 @@
 | Comandă | Ce verifică |
 |---|---|
 | `npm run test:unit` | Logica formularelor (validare, erori, editare, anti-XSS) cu mock Supabase |
-| `psql -f tests/rls_test.sql` | 49 verificări RLS: anonim / utilizator / proprietar ONG / admin, constrângeri, limite, Storage |
+| `psql -v ON_ERROR_STOP=1 -f rls_test.sql` | 49 verificări RLS: anonim / utilizator / proprietar ONG / admin, constrângeri, limite, Storage |
 | `npm run test:e2e` | Smoke test desktop + mobil (Playwright) — de adaptat la selectorii reali |
-| `bash scripts/audit-mock.sh` | Candidați pentru conținut demo/succes fals (Faza 2) |
+| `bash audit-mock.sh` | Candidați pentru conținut demo/succes fals (Faza 2) |
 
 ## 5. Deploy
 Site static: orice host static (GitHub Pages, Netlify, Cloudflare Pages). Nu există pas de build. Publică rădăcina repo-ului (`index.html`, `app.js`, `data.js`, `forms.js`, `supabase.js`). În Supabase → Authentication → URL Configuration adaugă domeniul de producție la *Site URL* / *Redirect URLs*.
