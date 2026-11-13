@@ -28,7 +28,7 @@ const tick = () => new Promise((r) => setTimeout(r, 20));
 
 test('esc() neutralizează HTML', () => {
   const { w } = setup();
-  assert.equal(w.esc('<img src=x onerror=alert(1)>"'), '&lt;img src=x onerror=alert(1)&gt;&quot;');
+  assert.equal(w.escapeHTML('<img src=x onerror=alert(1)>"'), '&lt;img src=x onerror=alert(1)&gt;&quot;');
 });
 
 test('utilizator neautentificat: nu se deschide formularul', async () => {
