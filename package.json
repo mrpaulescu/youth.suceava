@@ -6,7 +6,9 @@
     "serve": "python3 -m http.server 8000",
     "test:unit": "node --test tests/forms.test.js",
     "test:e2e": "playwright test smoke.spec.js",
-    "audit:mock": "bash audit-mock.sh"
+    "audit:mock": "bash audit-mock.sh",
+    "check": "node --check app.js && node --check data.js && node --check forms.js && node --check auth.js && node --check supabase.js",
+    "test": "npm run check && npm run test:unit"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
