@@ -152,7 +152,7 @@
       let val = (el.value || '').trim();
       if (val === '') { v[f.n] = null; continue; }
       if (f.t === 'number') val = Number(val);
-      else if (f.t === 'datetime-local') val = new Date(val).toISOString();
+      else if (f.t === 'datetime-local') { const date = new Date(val); if (Number.isNaN(date.getTime())) throw new Error('Data introdusă nu este validă.'); val = date.toISOString(); }
       v[f.n] = val;
     }
     return v;
@@ -188,7 +188,9 @@
       const bad = cfg.fields.find((f) => f.req && !form.elements[f.n].value.trim());
       if (bad) { err.textContent = `Câmpul „${bad.l}” este obligatoriu.`; form.elements[bad.n].focus(); return; }
       if (!form.checkValidity()) { err.textContent = 'Verifică valorile introduse.'; return; }
-      const values = record ? readValues(form, cfg.fields) : { ...readValues(form, cfg.fields), ...extra };
+      let values;
+      try { values = record ? readValues(form, cfg.fields) : { ...readValues(form, cfg.fields), ...extra }; }
+      catch (error) { err.textContent = error.message || 'Verifică data introdusă.'; btn.disabled = false; btn.textContent = label; return; }
       if (record && extra.ngo_id) values.ngo_id = extra.ngo_id;
       const msg = cfg.validate && cfg.validate(values); if (msg) { err.textContent = msg; return; }
       btn.disabled = true; btn.textContent = 'Se trimite…';            // protecție la dublu-submit
