@@ -182,13 +182,13 @@
         supabase.from('ngos').select('id,name').eq('created_by', user.id).order('name'),
         supabase.from('ngo_members').select('ngo_id').eq('user_id', user.id)
       ]);
-      const memberIds = (memberships || []).map(row => row.ngo_id);
+      const memberIds = (Array.isArray(memberships) ? memberships : []).map(row => row.ngo_id);
       let memberOrgs = [];
       if (memberIds.length) {
         const result = await supabase.from('ngos').select('id,name').in('id', memberIds).order('name');
         memberOrgs = result.data || [];
       }
-      const orgs = [...new Map([...(owned || []), ...memberOrgs].map(org => [org.id, org])).values()];
+      const orgs = [...new Map([...(Array.isArray(owned) ? owned : []), ...memberOrgs].map(org => [org.id, org])).values()];
       const field = cfg.fields.find(field => field.n === 'ngo_id');
       field.o = orgs.map(org => [org.id, org.name]);
       if (!field.req) field.o.unshift(['', 'Fără organizație']);
