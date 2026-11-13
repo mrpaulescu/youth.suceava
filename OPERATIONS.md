@@ -13,7 +13,7 @@
 
 ## 3. Migrare pe producția existentă (verifică înainte!)
 1. Exportă schema curentă: `supabase db dump --schema public > backup_inainte.sql` (sau backup din Dashboard).
-2. Compară tabelele/coloanele existente cu `docs/SCHEMA.md`. `CREATE TABLE IF NOT EXISTS` **nu** modifică tabele existente: coloanele lipsă se adaugă printr-o migrare separată `0003_*.sql`.
+2. Compară tabelele/coloanele existente cu `SCHEMA.md`. `CREATE TABLE IF NOT EXISTS` **nu** modifică tabele existente: coloanele lipsă se adaugă printr-o migrare separată `0003_*.sql`.
 3. Datele existente nu au `status` valid → după migrare rulează o singură dată `update <tabel> set status='published' where status is distinct from 'published';` pentru conținutul deja afișat public.
 4. Primul admin: `insert into user_roles (user_id, role) values ('<uuid din auth.users>', 'admin');`
 
