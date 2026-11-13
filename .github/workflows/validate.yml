@@ -6,10 +6,8 @@ on:
 jobs:
   unit-and-syntax:
     runs-on: ubuntu-latest
+    container: node:20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - run: npm install
       - run: npm test
