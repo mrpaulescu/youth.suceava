@@ -1,0 +1,15 @@
+{
+  "name": "youth-suceava",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "test:unit": "node --test tests/forms.test.js",
+    "test:e2e": "playwright test",
+    "audit:mock": "bash audit-mock.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "jsdom": "^26.1.0"
+  }
+}
