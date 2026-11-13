@@ -360,6 +360,7 @@
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<link rel="stylesheet" href="./ui.css">
 </head>
 <body>
 <div class="app">
@@ -377,9 +378,10 @@
     <a class="nav" data-nav="collabs" onclick="go('collabs')"><i class="ti ti-puzzle"></i> Colaborări <span class="badge">8</span></a>
     <a class="nav" data-nav="funding" onclick="go('funding')"><i class="ti ti-coin"></i> Finanțări</a>
     <a class="nav" data-nav="resources" onclick="go('resources')"><i class="ti ti-books"></i> Resurse</a>
-    <div class="side-foot">
-      <div class="avatar">PG</div>
-      <div style="font-size:13px"><div style="font-weight:500">Paul Grosu</div><div style="color:var(--text-3);font-size:11px">voluntar · Suceava</div></div>
+    <div class="side-foot account-foot">
+      <div class="avatar" id="side-avatar">V</div>
+      <div class="side-user-copy"><div id="side-user-name">Vizitator</div><div id="side-user-meta">Explorezi fără cont</div></div>
+      <button class="account-mini" type="button" onclick="YSAuth.openAccount()" aria-label="Contul meu"><i class="ti ti-user-cog"></i></button>
     </div>
   </aside>
 
@@ -388,6 +390,7 @@
       <button class="menu-btn" aria-label="Deschide meniul" onclick="toggleSide()"><i class="ti ti-menu-2"></i></button>
       <div id="tb-title"></div>
       <div class="search"><i class="ti ti-search"></i><input id="q" placeholder="Caută…" oninput="onSearch()"></div>
+      <button class="btn account-top" id="auth-action" onclick="YSAuth.openAccount()" type="button">Autentificare</button>
       <button class="bell-btn" id="bell" aria-label="Notificări" onclick="toggleNotifs(event)"><i class="ti ti-bell"></i><span class="ndot" id="ndot" style="display:none"></span></button>
       <button class="btn primary" id="tb-cta"></button>
     </div>
@@ -500,6 +503,7 @@
 <script src="./supabase.js"></script>
 <script src="./data.js"></script>
 <script src="./forms.js"></script>
+<script src="./auth.js"></script>
 <script src="./app.js"></script>
 </body>
 </html>
