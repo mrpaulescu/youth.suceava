@@ -74,7 +74,7 @@ function renderResources(){
 }
 
 /* ===== SOCIAL: FEED, FOLLOWS, NOTIFICATIONS ===== */
-const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const PTYPE={update:['Actualizare','t-edu'],anunt:['Anunț','t-on'],intrebare:['Întrebare','t-soc'],consult:['Consultare publică','t-civ'],realizare:['Reușită','t-env']};
 
 const POSTS=[];
@@ -158,19 +158,19 @@ function postCard(p){
   const cmts=p.cmts||[];
   const likeN=p.likes+(liked?1:0);
   let headBtn='';
-  if(p.a.k==='me')headBtn=`<button class="followb on" title="Șterge postarea" onclick="delPost('${p.id}')"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
+  if(p.a.k==='me'||(p.a.k==='u'&&window.YSAuth?.getUser?.()?.id===p.a.id))headBtn=`<button class="followb on" title="Șterge postarea" onclick="delPost('${p.id}')"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
   else{const fk=fkey(p.a);
     headBtn=isFollowed(fk)?`<button class="followb on" onclick="toggleFollow('${fk}','${au.n}')"><i class="ti ti-check" style="font-size:13px"></i> Urmărit</button>`
       :`<button class="followb" onclick="toggleFollow('${fk}','${au.n}')">+ Urmărește</button>`;}
   const cHtml=openCmts.has(p.id)?`<div class="comments">${cmts.map(c=>{const r=ROLE[c.tag];
-      return `<div class="cmt"><div class="pav" style="background:${r[2]};color:${r[1]}">${c.i}</div><div class="bubble"><b>${c.n}</b><span class="rb2" style="background:${r[2]};color:${r[1]}">${r[0]}</span><span class="ct">${c.time}</span><div>${c.raw?esc(c.text):c.text}</div></div></div>`;}).join('')}
+      return `<div class="cmt"><div class="pav" style="background:${r[2]};color:${r[1]}">${c.i}</div><div class="bubble"><b>${c.n}</b><span class="rb2" style="background:${r[2]};color:${r[1]}">${r[0]}</span><span class="ct">${c.time}</span><div>${esc(c.text)}</div></div></div>`;}).join('')}
     <div class="cmt-in"><div class="pav" style="background:var(--coral-bg);color:var(--coral);width:30px;height:30px;font-size:11px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0">${viewer().initials}</div><input id="cin-${p.id}" placeholder="Scrie un comentariu…" onkeydown="if(event.key==='Enter')addCmt('${p.id}')"><button class="btn primary sm" onclick="addCmt('${p.id}')" aria-label="Trimite comentariul"><i class="ti ti-send"></i></button></div></div>`:'';
   return `<div class="post ${p.type==='consult'?'consult':''}">
     <div class="phead"><div class="pav" style="background:${au.bg};color:${au.col}" onclick="${au.click}">${au.i}</div>
       <div class="who"><h3 onclick="${au.click}">${au.n}</h3><span class="rb2" style="background:${au.bg};color:${au.col}">${au.role}</span>
         <div class="sub2">${au.sub} · ${p.time}</div></div>${headBtn}</div>
     ${p.type!=='update'?`<div class="tags" style="margin-bottom:8px"><span class="tag ${ty[1]}">${ty[0]}</span></div>`:''}
-    <div class="ptext">${p.a.k==='me'?esc(p.text):p.text}</div>
+    <div class="ptext">${esc(p.text)}</div>
     ${p.type==='consult'?'<div class="consult-note"><i class="ti ti-gavel"></i> Consultare oficială — comentariile intră în sinteza trimisă comisiei.</div>':''}
     ${attachCard(p.attach)}
     <div class="pstats"><span>${likeN} ${likeN===1?'susținere':'susțineri'}</span><span>${cmts.length} ${cmts.length===1?'comentariu':'comentarii'}</span></div>
