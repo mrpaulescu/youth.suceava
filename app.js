@@ -40,7 +40,7 @@ async function registerEvent(id){
   const user=window.YSAuth?.getUser?.()||null;
   const name=(document.getElementById('reg-name')?.value||'').trim();
   const email=(document.getElementById('reg-email')?.value||user?.email||'').trim();
-  if(!name||!email){const err=document.getElementById('reg-error');if(err)err.textContent='Completează numele și adresa de email pentru confirmarea înscrierii.';return false;}
+  if(!name||name.length<2||!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){const err=document.getElementById('reg-error');if(err)err.textContent='Completează numele și adresa de email pentru confirmarea înscrierii.';return false;}
   const payload={event_id:id,user_id:user?.id||null,status:'registered',full_name:name,email};
   const query=user
     ? supabaseClient.from('event_registrations').upsert(payload,{onConflict:'event_id,user_id'})
