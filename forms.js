@@ -48,7 +48,7 @@
       fields: [
         { n: 'title', l: 'Titlu', req: 1, max: 200 },
         { n: 'type', l: 'Tip', t: 'select', o: OPT.collabType, req: 1 },
-        { n: 'category', l: 'Categorie' },
+        { n: 'category', l: 'Categorie', t: 'select', o: OPT.ngoCat, req: 1 },
         { n: 'description', l: 'Descriere', t: 'textarea', req: 1, max: 3000 },
         { n: 'location', l: 'Locație' },
         { n: 'deadline', l: 'Termen limită', t: 'date' },
@@ -85,7 +85,7 @@
       fields: [
         { n: 'title', l: 'Titlu', req: 1, max: 200 },
         { n: 'type', l: 'Tip', t: 'select', o: OPT.resType, req: 1 },
-        { n: 'category', l: 'Categorie' },
+        { n: 'category', l: 'Categorie', t: 'select', o: OPT.eventCat, req: 1 },
         { n: 'description', l: 'Descriere', t: 'textarea', max: 2000 },
         { n: 'url', l: 'Link (https://…)', t: 'url', req: 1 },
       ],
