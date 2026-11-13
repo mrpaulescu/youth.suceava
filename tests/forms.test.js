@@ -78,7 +78,7 @@ test('eroare de server: mesaj afișat, datele păstrate, buton reactivat', async
 });
 
 test('editare: precompletare + update după id, fără status', async () => {
-  const rec = { id: 'e1', title: 'Atelier', starts_at: '2026-12-01T10:00:00Z', is_online: true, capacity: 30 };
+  const rec = { id: 'e1', title: 'Atelier', category: 'edu', starts_at: '2026-12-01T10:00:00Z', is_online: true, capacity: 30 };
   const { w, doc, calls } = setup({ respond: (b) => (b.op === 'select' ? { data: rec, error: null } : { data: {}, error: null }) });
   await w.YSForms.openEdit('event', 'e1');
   await tick();
