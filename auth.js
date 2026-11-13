@@ -134,7 +134,7 @@
     };
   }
 
-  document.addEventListener('DOMContentLoaded', refresh);
+  document.addEventListener('DOMContentLoaded', () => { refresh().then(() => window.dispatchEvent(new CustomEvent('ys:auth-changed'))); });
   client().auth.onAuthStateChange(() => { window.setTimeout(() => refresh().then(() => window.dispatchEvent(new CustomEvent('ys:auth-changed'))), 0); });
   window.YSAuth = { open, openAccount, refresh, identity, getUser: () => user };
 })();
